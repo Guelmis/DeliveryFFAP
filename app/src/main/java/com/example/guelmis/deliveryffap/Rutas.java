@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.guelmis.deliveryffap.signaling.BasicResponse;
+import com.example.guelmis.deliveryffap.signaling.ServerSignal;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -17,6 +19,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.TextView;
@@ -32,9 +35,16 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     private double currentLatitude,currentLongitude;
     private Polyline newPolyline;
     private LatLngBounds latlngBounds;
+    private boolean areaApplied;
+    private Integer deliveryID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        areaApplied = false;
+        deliveryID = ServerSignal.getDeliveryID();
+
         setContentView(R.layout.ruta);
         mLocationProvider = new LocationProvider(this, this);
         try
@@ -45,18 +55,19 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         catch(Exception e) {
             e.printStackTrace();
         }
+
     }
     @Override
     protected void onResume() {
         super.onResume();
         initializeMap();
         mLocationProvider.connect();
-        mLocationProvider.connect();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+       // mLocationProvider.connect();
         mLocationProvider.disconnect();
     }
     public void handleGetDirectionsResult(ArrayList directionPoints) {
@@ -106,24 +117,27 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     }
 
     public void area(){
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ubicacion.latitude, ubicacion.longitude), 13f));
-
+         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ubicacion.latitude, ubicacion.longitude), 13f));
     }
 
     public void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
+        Toast.makeText(Rutas.this, "Moviendo " + currentLatitude + " " + currentLongitude, Toast.LENGTH_LONG).show();
         Bundle point1 = getIntent().getExtras();
         Lat1=point1.getDouble("Lat");
         Long1=point1.getDouble("Long");
         ubicacion = new LatLng(currentLatitude, currentLongitude);
         destino = new LatLng(Lat1,Long1);
-        map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicación Actual"));
+        map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual"));
         map.addMarker(new MarkerOptions().position(destino));
-        CrearRuta();
-        area();
+        BasicResponse confirm = ServerSignal.sendLocation(deliveryID, ubicacion);
+        if(!areaApplied){
+            CrearRuta();
+            area();
+            areaApplied = true;
+        }
     }
     public void CrearRuta() {
 

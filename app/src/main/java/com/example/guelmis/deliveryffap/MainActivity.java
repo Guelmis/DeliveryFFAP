@@ -45,8 +45,8 @@ public class MainActivity extends ActionBarActivity {
                 if ((!email.getText().toString().equals("")) && (!password.getText().toString().equals(""))) {
                     NetAsync(view);
                 } else if ((!email.getText().toString().equals(""))) {
-                    alertDialog.setTitle("No se pudo iniciar sesión");
-                    alertDialog.setMessage("El campo de la contraseña está vacío, Por favor introduzca su contraseña");
+                    alertDialog.setTitle("No se pudo iniciar sesion");
+                    alertDialog.setMessage("El campo de la contraseï¿½a estï¿½ vacï¿½o, Por favor introduzca su contraseï¿½a");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -56,8 +56,8 @@ public class MainActivity extends ActionBarActivity {
                     alertDialog.show();
 
                 } else if ((!password.getText().toString().equals(""))) {
-                    alertDialog.setTitle("No se pudo iniciar sesión");
-                    alertDialog.setMessage("El campo de usuario está vacío, Por favor introduzca su nombre de usuario");
+                    alertDialog.setTitle("No se pudo iniciar sesiï¿½n");
+                    alertDialog.setMessage("El campo de usuario estï¿½ vacï¿½o, Por favor introduzca su nombre de usuario");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -66,8 +66,8 @@ public class MainActivity extends ActionBarActivity {
                             });
                     alertDialog.show();
                 } else {
-                    alertDialog.setTitle("No se pudo iniciar sesión");
-                    alertDialog.setMessage("Campo de usuario y contraseña vacíos, Por favor introduzca su nombre de usuario y contraseña");
+                    alertDialog.setTitle("No se pudo iniciar sesiï¿½n");
+                    alertDialog.setMessage("Campo de usuario y contraseï¿½a vacï¿½os, Por favor introduzca su nombre de usuario y contraseï¿½a");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -108,7 +108,7 @@ public class MainActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             nDialog = new ProgressDialog(MainActivity.this);
-            nDialog.setTitle("Verificando la conexión a Internet");
+            nDialog.setTitle("Verificando la conexiï¿½n a Internet");
             nDialog.setMessage("Por favor, espere..");
             nDialog.setIndeterminate(false);
             nDialog.setCancelable(true);
@@ -150,8 +150,8 @@ public class MainActivity extends ActionBarActivity {
             } else {
                 nDialog.dismiss();
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("No se pudo iniciar sesión");
-                alertDialog.setMessage("Error al conectarse a la red, Por favor verifique su conexión a Internet");
+                alertDialog.setTitle("No se pudo iniciar sesiï¿½n");
+                alertDialog.setMessage("Error al conectarse a la red, Por favor verifique su conexiï¿½n a Internet");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -212,8 +212,8 @@ public class MainActivity extends ActionBarActivity {
 
                         pDialog.dismiss();
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                        alertDialog.setTitle("No se pudo iniciar sesión");
-                        alertDialog.setMessage("Nombre de usuario y/o contraseña incorrectos, Por favor intentelo de nuevo");
+                        alertDialog.setTitle("No se pudo iniciar sesiï¿½n");
+                        alertDialog.setMessage("Nombre de usuario y/o contraseï¿½a incorrectos, Por favor intentelo de nuevo");
                         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
