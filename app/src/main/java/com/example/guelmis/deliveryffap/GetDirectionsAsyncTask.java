@@ -29,7 +29,7 @@ public class GetDirectionsAsyncTask extends AsyncTask<Map<String, String>, Objec
     {
         progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage("Trazando Ruta");
-        progressDialog.show();
+       // progressDialog.show();
     }
 
     @Override
