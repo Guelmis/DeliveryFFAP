@@ -120,7 +120,7 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         Long1=point1.getDouble("Long");
         ubicacion = new LatLng(currentLatitude, currentLongitude);
         destino = new LatLng(Lat1,Long1);
-        map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicación Actual"));
+        map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicaciï¿½n Actual"));
         map.addMarker(new MarkerOptions().position(destino));
         CrearRuta();
         area();
