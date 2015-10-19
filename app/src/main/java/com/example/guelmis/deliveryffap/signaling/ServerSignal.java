@@ -1,5 +1,6 @@
 package com.example.guelmis.deliveryffap.signaling;
 
+import com.example.guelmis.deliveryffap.models.Delivery;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.apache.http.NameValuePair;
@@ -154,6 +155,13 @@ public class ServerSignal {
         }
 
         return ret;
+    }
+
+    public static Delivery getFullDelivery(){
+
+        
+
+        return null;
     }
 
 }

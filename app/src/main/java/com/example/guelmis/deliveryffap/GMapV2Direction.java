@@ -49,22 +49,22 @@ public class GMapV2Direction {
 
     public String getDurationText (Document doc) {
         NodeList nl1 = doc.getElementsByTagName("duration");
-        Node node1 = nl1.item(0);
+        Node node1 = nl1.item(nl1.getLength()-1);
         NodeList nl2 = node1.getChildNodes();
         Node node2 = nl2.item(getNodeIndex(nl2, "text"));
         Log.i("DurationText", node2.getTextContent());
-        return node2.getTextContent();
+        return node2.getTextContent().split("\\s+")[0];
     }
 
-    public int getDurationValue (Document doc) {
+    public double getDurationValue (Document doc) {
         NodeList nl1 = doc.getElementsByTagName("duration");
-        Node node1 = nl1.item(0);
+        Node node1 = nl1.item(nl1.getLength()-1);
         NodeList nl2 = node1.getChildNodes();
         Node node2 = nl2.item(getNodeIndex(nl2, "value"));
         Log.i("DurationValue", node2.getTextContent());
-        return Integer.parseInt(node2.getTextContent());
+        return Double.parseDouble(node2.getTextContent().split("\\s+")[0]);
     }
-
+/*
     public String getDistanceText (Document doc) {
         NodeList nl1 = doc.getElementsByTagName("distance");
         Node node1 = nl1.item(0);
@@ -73,14 +73,22 @@ public class GMapV2Direction {
         Log.i("DistanceText", node2.getTextContent());
         return node2.getTextContent();
     }
-
-    public int getDistanceValue (Document doc) {
+*/
+    public String getDistanceText (Document doc) {
         NodeList nl1 = doc.getElementsByTagName("distance");
-        Node node1 = nl1.item(0);
+        Node node1 = nl1.item(nl1.getLength()-1); // <– The last node
+        NodeList nl2 = node1.getChildNodes();
+        Node node2 = nl2.item(getNodeIndex(nl2, "text"));
+        System.out.println("distance text: " + node2.getTextContent());
+        return node2.getTextContent().split("\\s+")[0];
+    }
+    public double getDistanceValue (Document doc) {
+        NodeList nl1 = doc.getElementsByTagName("distance");
+        Node node1 = nl1.item(nl1.getLength()-1);
         NodeList nl2 = node1.getChildNodes();
         Node node2 = nl2.item(getNodeIndex(nl2, "value"));
         Log.i("DistanceValue", node2.getTextContent());
-        return Integer.parseInt(node2.getTextContent());
+        return Double.parseDouble(node2.getTextContent().split("\\s+")[0]);
     }
 
     public String getStartAddress (Document doc) {

@@ -3,12 +3,13 @@ package com.example.guelmis.deliveryffap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
+import android.view.View.OnClickListener;
 import com.example.guelmis.deliveryffap.signaling.BasicResponse;
 import com.example.guelmis.deliveryffap.signaling.ServerSignal;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -22,30 +23,49 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AbsoluteLayout;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Rutas extends FragmentActivity implements LocationProvider.LocationCallback{
-    double Lat1,Lat2,Long1,Long2;
+import org.w3c.dom.Document;
+
+public class Rutas extends FragmentActivity implements LocationProvider.LocationCallback {
     public static final String TAG = Rutas.class.getSimpleName();
     private LocationProvider mLocationProvider;
     private GoogleMap map;
-    private LatLng destino;
+    private ArrayList<LatLng> tiendas;
+    private LatLng cliente1;
+    private LatLng cliente2;
     private static LatLng ubicacion = new LatLng(0,0);
-    private double currentLatitude,currentLongitude;
     private Polyline newPolyline;
     private LatLngBounds latlngBounds;
     private boolean areaApplied;
     private Integer deliveryID;
+    private static Double distTotal;
+    private static Double tTotal;
+    Button paquete;
+    View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.ruta);
+        paquete = (Button) findViewById(R.id.btnpackage);
+        cliente1 = new LatLng(18.482233, -69.912613);
+        cliente2 = new LatLng(18.483255, -69.939677);
+        tiendas = new ArrayList<>();
+
+        final Bundle points = getIntent().getExtras();
+
+        for(int i=0; points.getDouble("Lat"+Integer.toString(i+1)) != 0.0; i++){
+            tiendas.add(new LatLng(points.getDouble("Lat"+Integer.toString(i+1)), points.getDouble("Long"+Integer.toString(i+1))));
+        }
 
         areaApplied = false;
-        deliveryID = ServerSignal.getDeliveryID();
-
-        setContentView(R.layout.ruta);
+        //deliveryID = ServerSignal.getDeliveryID();
         mLocationProvider = new LocationProvider(this, this);
         try
         {
@@ -55,8 +75,35 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         catch(Exception e) {
             e.printStackTrace();
         }
+        for(int i=0; i<tiendas.size(); i++) {
+            map.addMarker(new MarkerOptions().position(tiendas.get(i)));
+        }
 
+        map.addMarker(new MarkerOptions().position(cliente1)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        map.addMarker(new MarkerOptions().position(cliente2)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+        distTotal=0.0;
+        tTotal=0.0;
+        paquete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(Rutas.this, Rutas.class);
+                Bundle newpoints = new Bundle();
+                for(int i=0; points.getDouble("Lat"+Integer.toString(i+2)) != 0.0; i++){
+                    //tiendas.add(new LatLng(points.getDouble("Lat"+Integer.toString(i+1)), points.getDouble("Long"+Integer.toString(i+1))));
+                    newpoints.putDouble("Lat"+Integer.toString(i+1), points.getDouble("Lat"+Integer.toString(i+2)));
+                    newpoints.putDouble("Long"+Integer.toString(i+1), points.getDouble("Long"+Integer.toString(i+2)));
+                }
+                myIntent.putExtras(newpoints);
+                finish();
+                startActivity(myIntent);
+            }
+        });
+        paquete.setText("Orden Entregada");
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -122,26 +169,38 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
 
     public void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
-        currentLatitude = location.getLatitude();
-        currentLongitude = location.getLongitude();
-        Toast.makeText(Rutas.this, "Moviendo " + currentLatitude + " " + currentLongitude, Toast.LENGTH_LONG).show();
-        Bundle point1 = getIntent().getExtras();
-        Lat1=point1.getDouble("Lat");
-        Long1=point1.getDouble("Long");
-        ubicacion = new LatLng(currentLatitude, currentLongitude);
-        destino = new LatLng(Lat1,Long1);
+        //Toast.makeText(Rutas.this, "Moviendo " + currentLatitude + " " + currentLongitude, Toast.LENGTH_LONG).show();
+        ubicacion = new LatLng(location.getLatitude(), location.getLongitude());
+
         map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual"));
-        map.addMarker(new MarkerOptions().position(destino));
-        BasicResponse confirm = ServerSignal.sendLocation(deliveryID, ubicacion);
+        //BasicResponse confirm = ServerSignal.sendLocation(deliveryID, ubicacion);
+        Toast.makeText(Rutas.this, distTotal.toString() + " km " + tTotal.toString() + " min", Toast.LENGTH_LONG).show();
+
         if(!areaApplied){
-            CrearRuta();
+            CrearRuta(ubicacion, tiendas);
             area();
             areaApplied = true;
         }
     }
-    public void CrearRuta() {
 
-        findDirections(ubicacion.latitude, ubicacion.longitude, Lat1, Long1, GMapV2Direction.MODE_DRIVING);
+    private void CrearRuta(LatLng _ubicacion, ArrayList<LatLng> destinos) {
+        findDirections(_ubicacion.latitude, _ubicacion.longitude, destinos.get(0).latitude, destinos.get(0).longitude,
+                GMapV2Direction.MODE_DRIVING);
+        int laststore = 0;
+        for(int i=1; i<destinos.size(); i++){
+            findDirections(destinos.get(i-1).latitude, destinos.get(i-1).longitude, destinos.get(i).latitude, destinos.get(i).longitude,
+                    GMapV2Direction.MODE_DRIVING);
+            laststore = i;
+        }
 
+        findDirections(destinos.get(laststore).latitude, destinos.get(laststore).longitude, cliente1.latitude, cliente1.longitude,
+                GMapV2Direction.MODE_DRIVING);
+        findDirections(cliente1.latitude, cliente1.longitude, cliente2.latitude, cliente2.longitude,
+                GMapV2Direction.MODE_DRIVING);
+    }
+
+    public static void CalcEstimate(String distance, String duration){
+        distTotal += Double.parseDouble(distance);
+        tTotal += Double.parseDouble(duration);
     }
 }
