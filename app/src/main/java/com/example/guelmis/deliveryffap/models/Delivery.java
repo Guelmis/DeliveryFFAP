@@ -9,14 +9,15 @@ import java.util.ArrayList;
  */
 public class Delivery {
     private int id;
-
+    private int order_id;
     private String username;
-    private LatLng userLocation;
 
+    private LatLng userLocation;
     private ArrayList<Seller> sellers;
 
-    public Delivery (int _id, String _uname, LatLng _location, ArrayList _sellers){
+    public Delivery (int _id, int _order_id, String _uname, LatLng _location, ArrayList _sellers){
         id = _id;
+        order_id = _order_id;
         username = _uname;
         userLocation = _location;
         sellers = _sellers;
@@ -37,5 +38,10 @@ public class Delivery {
     public int getId() {
         return id;
     }
+
+    public int getOrder_id() {
+        return order_id;
+    }
+
 
 }

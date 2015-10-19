@@ -12,16 +12,16 @@ public class Seller {
     private String name;
     private String address;
     private String phone;
-    private String logo_url;
+   // private String logo_url;
     private ArrayList<LineItem> products;
     private LatLng location;
 
-    public Seller(String _id, String _name, String _address, String _phone, String _logo_url,
+    public Seller(String _id, String _name, String _address, String _phone, //String _logo_url,
                    LatLng _location, ArrayList<LineItem> _products){
         name = _name;
         address = _address;
         phone = _phone;
-        logo_url = _logo_url;
+       // logo_url = _logo_url;
         id = _id;
         location = _location;
         products = _products;
@@ -39,9 +39,9 @@ public class Seller {
         return phone;
     }
 
-    public String getLogo_url() {
-        return logo_url;
-    }
+  //  public String getLogo_url() {
+ //       return logo_url;
+ //   }
 
     public ArrayList<LineItem> getProducts() {
         return products;

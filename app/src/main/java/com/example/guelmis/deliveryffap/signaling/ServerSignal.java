@@ -1,6 +1,10 @@
 package com.example.guelmis.deliveryffap.signaling;
 
 import com.example.guelmis.deliveryffap.models.Delivery;
+import com.example.guelmis.deliveryffap.models.DeliveryInfo;
+import com.example.guelmis.deliveryffap.models.LineItem;
+import com.example.guelmis.deliveryffap.models.Product;
+import com.example.guelmis.deliveryffap.models.Seller;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.apache.http.NameValuePair;
@@ -33,8 +37,11 @@ public class ServerSignal {
     public static final String trackidURL = "http://10.0.0.21:5000/tracking/get_id/";
     public static final String tracksendURL = "http://10.0.0.21:5000/tracking/track/";
     public static final String trackreceiveURL = "http://10.0.0.21:5000/tracking/";
+    public static final String deliverylistURL = "http://10.0.0.10:5000/delivery_list/";
+    public static final String deliveryshowURL = "http://10.0.0.10:5000/delivery_display/";
 
     public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login/";
+    //public static final String loginURL = "http://10.0.0.10:5000/mobile_login/";
     public static final String searchURL = "http://ffap-itt-2015.herokuapp.com/product_query/search/";
     public static final String spinnersURL = "http://ffap-itt-2015.herokuapp.com/info_query/";
     public static final String sellersURL = "http://ffap-itt-2015.herokuapp.com/seller_query/";
@@ -157,11 +164,90 @@ public class ServerSignal {
         return ret;
     }
 
-    public static Delivery getFullDelivery(){
+    public static ArrayList<DeliveryInfo> listDeliveries(String username){
+        ArrayList<NameValuePair> params = new ArrayList<>();
+        JSONArray answer = null;
+        ArrayList<DeliveryInfo> ret = null;
 
-        
+        params.add(new BasicNameValuePair(username_tag, username));
 
-        return null;
+        try {
+            answer = new JArrRequester().post(deliverylistURL, params);
+            ret = new ArrayList<>();
+            for(int i=0; i<answer.length(); i++){
+                ret.add(new DeliveryInfo(Integer.parseInt(answer.getJSONObject(i).getString("id")),
+                        Integer.parseInt(answer.getJSONObject(i).getJSONObject("order").getString("id")),
+                        answer.getJSONObject(i).getJSONObject("client").getString(username_tag)));
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    public static Delivery getFullDelivery(String delivery_id){
+        ArrayList<NameValuePair> params = new ArrayList<>();
+        JSONObject answer = null;
+        Delivery ret = null;
+
+        params.add(new BasicNameValuePair("delivery_id", delivery_id));
+
+        try {
+            answer = new JObjRequester().post(deliveryshowURL, params);
+            ArrayList<Seller> sellers = new ArrayList<>();
+
+            JSONArray sellerJarr = answer.getJSONArray("sellers");
+
+            for(int i=0; i<sellerJarr.length(); i++){
+                ArrayList<LineItem> piezas = new ArrayList<>();
+                JSONArray itemJarr = sellerJarr.getJSONObject(i).getJSONArray("items");
+                for(int j=0; j<itemJarr.length(); j++){
+                    piezas.add(new LineItem(new Product(
+                            itemJarr.getJSONObject(j).getString("title"),
+                            itemJarr.getJSONObject(j).getJSONObject("brand").getString("brand_name"),
+                            itemJarr.getJSONObject(j).getJSONObject("model").getString("model_name"),
+                            itemJarr.getJSONObject(j).getString("image_url"),
+                            itemJarr.getJSONObject(j).getJSONObject("model").getInt("year"),
+                            itemJarr.getJSONObject(j).getString("id")),
+                            itemJarr.getJSONObject(j).getJSONObject("item").getInt("quantity")));
+                }
+                LatLng location = new LatLng(
+                        sellerJarr.getJSONObject(i).getJSONObject("location").getDouble("latitude"),
+                        sellerJarr.getJSONObject(i).getJSONObject("location").getDouble("longitude"));
+                sellers.add(new Seller(
+                        sellerJarr.getJSONObject(i).getJSONObject("seller").getString("id"),
+                        sellerJarr.getJSONObject(i).getJSONObject("seller").getString("name"),
+                        sellerJarr.getJSONObject(i).getJSONObject("seller").getString("address"),
+                        sellerJarr.getJSONObject(i).getJSONObject("seller").getString("phone"),
+                        location,
+                        piezas
+                ));
+            }
+
+            LatLng userLocation = new LatLng(
+                    answer.getJSONObject("location").getDouble("latitude"),
+                    answer.getJSONObject("location").getDouble("longitude"));
+
+            ret = new Delivery(
+                    answer.getInt("id"),
+                    answer.getJSONObject("order").getInt("id"),
+                    answer.getJSONObject("client").getString("username"),
+                    userLocation,
+                    sellers
+            );
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return ret;
     }
 
 }

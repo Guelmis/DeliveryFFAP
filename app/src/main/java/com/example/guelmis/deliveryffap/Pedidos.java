@@ -14,6 +14,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.guelmis.deliveryffap.models.Delivery;
+import com.example.guelmis.deliveryffap.models.DeliveryInfo;
+import com.example.guelmis.deliveryffap.signaling.ServerSignal;
+
 public class Pedidos extends Activity {
     ListView List;
     ArrayAdapter<String> adaptador;
@@ -26,7 +30,12 @@ public class Pedidos extends Activity {
         setContentView(R.layout.pedidos);
 
         datos = new ArrayList<>();
-        FillList();
+       // FillList();
+        String usuario = getIntent().getStringExtra("usuario");
+        ArrayList<DeliveryInfo> deliveries = ServerSignal.listDeliveries(usuario);
+        for(int i=0; i<deliveries.size(); i++){
+            datos.add("Orden " + deliveries.get(i).getOrder_id() + ", Cliente " + deliveries.get(i).getUsername());
+        }
         List = (ListView) findViewById(R.id.ListaPedidos);
       //  Toast.makeText(Pedidos.this, new Double(Double.parseDouble("10.6 km".split("\\s+")[0])).toString(), Toast.LENGTH_LONG).show();
 
@@ -37,26 +46,8 @@ public class Pedidos extends Activity {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View vista, int posicion, long arg3) {
-                if (((TextView) vista).getText() == "Orden 1") {
-                    mapa1();
-                }/*
-                else if (((TextView) vista).getText() == "Luz Trasera Toyota Camry 2010"){
-
-                    mapa2();
-                }
-                else if (((TextView) vista).getText() == "Luz Delantera Mazda 3 2013"){
-
-                    mapa3();
-                }
-                else if (((TextView) vista).getText() == "Bumper Lexus IS 250 2009"){
-
-                    mapa4();
-                }
-                else if (((TextView) vista).getText() == "Motor Volkswagen Jetta 2011"){
-
-                    mapa5();
-                }
-                */
+                Delivery test = ServerSignal.getFullDelivery(Integer.toString(1));
+                Boolean stop = true;
             }
         });
     }
@@ -76,40 +67,7 @@ public class Pedidos extends Activity {
         LatPoint.putExtras(point);
         startActivity(LatPoint);
     }
-/*
-    public void mapa2 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.4792998);
-        point.putDouble("Long",-69.8661014);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
-    public void mapa3 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.5126984);
-        point.putDouble("Long",-69.8409318);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
-    public void mapa4 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.5062603);
-        point.putDouble("Long", -69.8566022);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
-    public void mapa5 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.4882953);
-        point.putDouble("Long",-69.9270731);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }*/
-    private void FillList(){
+   private void FillList(){
 
         datos.add("Orden 1");
       //  datos.add("Luz Trasera Toyota Camry 2010");
