@@ -34,11 +34,12 @@ public class ServerSignal {
     public static final String cartremoveURL = "http://10.0.0.21:3000/cart_remove/";
     public static final String cartdestroyURL = "http://10.0.0.21:3000/cart_destroy/";
 */
-    public static final String trackidURL = "http://10.0.0.21:5000/tracking/get_id/";
-    public static final String tracksendURL = "http://10.0.0.21:5000/tracking/track/";
-    public static final String trackreceiveURL = "http://10.0.0.21:5000/tracking/";
+ //   public static final String trackidURL = "http://10.0.0.10:5000/tracking/get_id/";
+    public static final String tracksendURL = "http://10.0.0.10:5000/delivery_track/";
+    public static final String trackreceiveURL = "http://10.0.0.10:5000/tracking/";
     public static final String deliverylistURL = "http://10.0.0.10:5000/delivery_list/";
     public static final String deliveryshowURL = "http://10.0.0.10:5000/delivery_display/";
+    public static final String deliveryfinishURL = "http://10.0.0.10:5000/delivery_finish/";
 
     public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login/";
     //public static final String loginURL = "http://10.0.0.10:5000/mobile_login/";
@@ -95,7 +96,7 @@ public class ServerSignal {
         return ret;
     }
 
-    public static Integer getDeliveryID(){
+    /*public static Integer getDeliveryID(){
         ArrayList<NameValuePair> params = new ArrayList<>();
         JSONObject answer = null;
         Integer id = -1;
@@ -114,7 +115,7 @@ public class ServerSignal {
         }
 
         return id;
-    }
+    }*/
     public static LatLng getLocation(Integer id){
         ArrayList<NameValuePair> params = new ArrayList<>();
         JSONObject answer = null;
@@ -146,7 +147,7 @@ public class ServerSignal {
 
         params.add(new BasicNameValuePair("latitude", Latitude.toString()));
         params.add(new BasicNameValuePair("longitude", Longitude.toString()));
-        params.add(new BasicNameValuePair("id", id.toString()));
+        params.add(new BasicNameValuePair("delivery_id", id.toString()));
 
         try {
             answer = new JObjRequester().post(tracksendURL, params);
@@ -239,6 +240,32 @@ public class ServerSignal {
                     userLocation,
                     sellers
             );
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return ret;
+    }
+
+    public static BasicResponse finishDelivery(String delivery_id){
+        ArrayList<NameValuePair> params = new ArrayList<>();
+        JSONObject answer = null;
+        BasicResponse ret = null;
+
+        params.add(new BasicNameValuePair("delivery_id", delivery_id));
+
+        try {
+            answer = new JObjRequester().post(deliveryfinishURL, params);
+            if(answer.getString("success").equals("true")){
+                ret = new BasicResponse(true, answer.getString(KEY_MESSAGE), "");
+            }
+            else {
+                ret = new BasicResponse(false, answer.getString(KEY_MESSAGE), "");
+            }
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
