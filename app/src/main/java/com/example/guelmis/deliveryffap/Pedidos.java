@@ -14,12 +14,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.guelmis.deliveryffap.models.Delivery;
+import com.example.guelmis.deliveryffap.models.DeliveryInfo;
+import com.example.guelmis.deliveryffap.signaling.ServerSignal;
+
 public class Pedidos extends Activity {
-    public String Punto1;
-    public String Punto2;
-    ListView List;
-    ArrayAdapter<String> adaptador;
-    ArrayList<String> datos;
+    private ListView List;
+    private ArrayAdapter<String> adaptador;
+    private ArrayList<String> datos;
+    private ArrayList<DeliveryInfo> deliveries;
+    private String usuario;
 
 
     @Override
@@ -27,87 +31,40 @@ public class Pedidos extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pedidos);
 
-        datos = new ArrayList<String>();
-        FillList();
+        datos = new ArrayList<>();
+        usuario = getIntent().getStringExtra("usuario");
+        deliveries = ServerSignal.listDeliveries(usuario);
+        for(int i=0; i<deliveries.size(); i++){
+            datos.add("Orden " + deliveries.get(i).getOrder_id() + ", Cliente " + deliveries.get(i).getUsername());
+        }
         List = (ListView) findViewById(R.id.ListaPedidos);
 
-        adaptador = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, datos);
+        adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datos);
         List.setAdapter(adaptador);
-        List.setOnItemClickListener (new AdapterView.OnItemClickListener() {
+        List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View vista, int posicion, long arg3) {
-                if ((String) ((TextView) vista).getText() == "Retrovisor Honda Civic 2007")
-                {
-                    mapa1();
-                }
-                else if ((String) ((TextView) vista).getText() == "Luz Trasera Toyota Camry 2010"){
-
-                    mapa2();
-                }
-                else if ((String) ((TextView) vista).getText() == "Luz Delantera Mazda 3 2013"){
-
-                    mapa3();
-                }
-                else if ((String) ((TextView) vista).getText() == "Bumper Lexus IS 250 2009"){
-
-                    mapa4();
-                }
-                else if ((String) ((TextView) vista).getText() == "Motor Volkswagen Jetta 2011"){
-
-                    mapa5();
-                }
+                Intent myIntent = new Intent(Pedidos.this, Rutas.class);
+                Bundle extras = new Bundle();
+                extras.putString("usuario",usuario);
+                extras.putInt("offset", 0);
+                extras.putString("delivery_id", Integer.toString(deliveries.get(posicion).getId()));
+                myIntent.putExtras(extras);
+                startActivity(myIntent);
             }
         });
     }
-    public void mapa1 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.5007493);
-        point.putDouble("Long",-69.7902433);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
 
-    public void mapa2 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.4792998);
-        point.putDouble("Long",-69.8661014);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
-    public void mapa3 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.5126984);
-        point.putDouble("Long",-69.8409318);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
-    public void mapa4 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.5062603);
-        point.putDouble("Long", -69.8566022);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
-    public void mapa5 (){
-        Intent LatPoint= new Intent (this, Rutas.class);
-        Bundle point = new Bundle();
-        point.putDouble("Lat",18.4882953);
-        point.putDouble("Long",-69.9270731);
-        LatPoint.putExtras(point);
-        startActivity(LatPoint);
-    }
-    private void FillList(){
-
-        datos.add("Retrovisor Honda Civic 2007");
-        datos.add("Luz Trasera Toyota Camry 2010");
-        datos.add("Luz Delantera Mazda 3 2013");
-        datos.add("Bumper Lexus IS 250 2009");
-        datos.add("Motor Volkswagen Jetta 2011");
+    @Override
+    protected void onResume(){
+        super.onResume();
+        deliveries = ServerSignal.listDeliveries(usuario);
+        datos.clear();
+        for(int i=0; i<deliveries.size(); i++){
+            datos.add("Orden " + deliveries.get(i).getOrder_id() + ", Cliente " + deliveries.get(i).getUsername());
+        }
+        adaptador.notifyDataSetChanged();
     }
 }

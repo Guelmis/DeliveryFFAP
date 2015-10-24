@@ -31,6 +31,12 @@ public class MainActivity extends ActionBarActivity {
     private static String KEY_SUCCESS = "success";
     private static String KEY_MESSAGE = "message";
 
+    /*
+    Manejar esta excepcion desde el JSON Parser para indicar que no se pudo conectar a la pagina.
+    * HttpHostConnectException
+    *
+    * */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

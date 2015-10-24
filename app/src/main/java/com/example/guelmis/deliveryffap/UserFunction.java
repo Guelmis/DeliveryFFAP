@@ -11,7 +11,8 @@ import com.example.guelmis.deliveryffap.signaling.JSONParser;
 
 public class UserFunction {
     private JSONParser jsonParser;
-    public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login";
+    //public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login";
+    public static final String loginURL = "http://10.0.0.10:5000/mobile_login/";
     public static final String searchURL = "http://ffap-itt-2015.herokuapp.com/product_query/search";
     public static final String spinnersURL = "http://ffap-itt-2015.herokuapp.com/info_query";
     public static final String proyectoURL = "http://ffap-itt-2015.herokuapp.com/product_query";
