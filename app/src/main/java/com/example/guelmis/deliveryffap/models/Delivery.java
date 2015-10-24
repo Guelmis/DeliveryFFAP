@@ -4,9 +4,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-/**
- * Created by mario on 10/18/15.
- */
 public class Delivery {
     private int id;
     private int order_id;
@@ -42,6 +39,5 @@ public class Delivery {
     public int getOrder_id() {
         return order_id;
     }
-
 
 }

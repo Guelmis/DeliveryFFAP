@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#607D8B">
 
     <fragment
         android:id="@+id/map"
@@ -16,6 +17,19 @@
         android:text="Paquete Recogido"
         android:id="@+id/btnpackage"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="#D32F2F"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Piezas"
+        android:id="@+id/textViewPiezas"
+        android:textColor="#FFFFFF"
+        android:layout_above="@+id/btnpackage"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="46dp" />
 
 </RelativeLayout>

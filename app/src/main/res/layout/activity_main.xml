@@ -6,7 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.proy.MainActivity" >
+    tools:context="com.example.proy.MainActivity"
+    android:background="#607D8B">
 
     <EditText
         android:id="@+id/editTextEmail"
@@ -15,7 +16,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
-        android:ems="10" />
+        android:ems="10"
+        android:hint="Usuario" />
 
     <EditText
         android:id="@+id/editTextPass"
@@ -25,7 +27,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="46dp"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:hint="Contrasena" />
 
     <Button
         android:id="@+id/botonlogin"
@@ -35,7 +38,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
         android:onClick="ValidarLogin"
-        android:text="Iniciar Sesion" />
+        android:text="Iniciar Sesion"
+        android:textColor="#FFFFFF"
+        android:background="#D32F2F" />
 
 </RelativeLayout>
 

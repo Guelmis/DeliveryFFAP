@@ -1,8 +1,5 @@
 package com.example.guelmis.deliveryffap.models;
 
-/**
- * Created by mario on 10/18/15.
- */
 public class DeliveryInfo {
     private int id;
     private int order_id;
