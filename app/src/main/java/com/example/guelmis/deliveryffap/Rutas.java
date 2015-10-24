@@ -253,9 +253,9 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     private String markerTitle(int index){
         String ret = "";
         ret += fulldeliveryinfo.getSellers().get(index).getName() + "\n";
-        for (int i=0; i<fulldeliveryinfo.getSellers().get(index).getProducts().size(); i++){
+        /*for (int i=0; i<fulldeliveryinfo.getSellers().get(index).getProducts().size(); i++){
             ret += fulldeliveryinfo.getSellers().get(index).getProducts().get(i).getTitle();
-        }
+        }*/
         return ret;
     }
 

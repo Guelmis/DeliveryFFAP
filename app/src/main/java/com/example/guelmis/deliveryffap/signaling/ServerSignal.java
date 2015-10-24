@@ -33,16 +33,21 @@ public class ServerSignal {
     public static final String cartaddURL = "http://10.0.0.21:3000/cart_add/";
     public static final String cartremoveURL = "http://10.0.0.21:3000/cart_remove/";
     public static final String cartdestroyURL = "http://10.0.0.21:3000/cart_destroy/";
-*/
+
  //   public static final String trackidURL = "http://10.0.0.10:5000/tracking/get_id/";
     public static final String tracksendURL = "http://10.0.0.10:5000/delivery_track/";
     public static final String trackreceiveURL = "http://10.0.0.10:5000/tracking/";
     public static final String deliverylistURL = "http://10.0.0.10:5000/delivery_list/";
     public static final String deliveryshowURL = "http://10.0.0.10:5000/delivery_display/";
     public static final String deliveryfinishURL = "http://10.0.0.10:5000/delivery_finish/";
-
+*/
     public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login/";
-    //public static final String loginURL = "http://10.0.0.10:5000/mobile_login/";
+    public static final String tracksendURL = "http://ffap-itt-2015.herokuapp.com/delivery_track/";
+    public static final String trackreceiveURL = "http://ffap-itt-2015.herokuapp.com/tracking/";
+    public static final String deliverylistURL = "http://ffap-itt-2015.herokuapp.com/delivery_list/";
+    public static final String deliveryshowURL = "http://ffap-itt-2015.herokuapp.com/delivery_display/";
+    public static final String deliveryfinishURL = "http://ffap-itt-2015.herokuapp.com/delivery_finish/";
+
     public static final String searchURL = "http://ffap-itt-2015.herokuapp.com/product_query/search/";
     public static final String spinnersURL = "http://ffap-itt-2015.herokuapp.com/info_query/";
     public static final String sellersURL = "http://ffap-itt-2015.herokuapp.com/seller_query/";
