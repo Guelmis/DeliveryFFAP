@@ -7,40 +7,46 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.proy.MainActivity"
-    android:background="#607D8B">
+    android:background="#607D8B"
+    android:padding="12sp">
 
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="68dp"
         android:ems="10"
-        android:hint="Usuario" />
+        android:hint="Usuario"
+        android:background="#FFFFFF"
+        android:padding="8sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/editTextPass" />
 
     <EditText
         android:id="@+id/editTextPass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextEmail"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="46dp"
         android:ems="10"
         android:inputType="textPassword"
-        android:hint="Contrasena" />
+        android:hint="Contraseña"
+        android:background="#FFFFFF"
+        android:padding="8sp"
+        android:layout_below="@+id/editTextEmail"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="63dp" />
 
     <Button
         android:id="@+id/botonlogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextPass"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="65dp"
         android:onClick="ValidarLogin"
-        android:text="Iniciar Sesion"
+        android:text="Iniciar Sesión"
         android:textColor="#FFFFFF"
-        android:background="#D32F2F" />
+        android:background="#D32F2F"
+        android:padding="12sp"
+        android:layout_below="@+id/editTextPass"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
 

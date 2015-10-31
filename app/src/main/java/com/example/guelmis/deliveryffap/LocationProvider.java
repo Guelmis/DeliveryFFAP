@@ -1,8 +1,5 @@
 package com.example.guelmis.deliveryffap;
 
-/**
- * Created by Guelmis on 7/25/2015.
- */
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;

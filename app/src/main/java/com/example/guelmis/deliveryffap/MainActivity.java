@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,24 +24,25 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-
 public class MainActivity extends ActionBarActivity {
     Button login;
     EditText email;
     EditText password;
+    ActionBar actionbar;
     private static String KEY_SUCCESS = "success";
     private static String KEY_MESSAGE = "message";
 
-    /*
-    Manejar esta excepcion desde el JSON Parser para indicar que no se pudo conectar a la pagina.
-    * HttpHostConnectException
-    *
-    * */
+    /*Manejar esta excepcion desde el JSON Parser para indicar que no se pudo conectar a la pagina.
+    * HttpHostConnectException */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        actionbar = getSupportActionBar();
+        actionbar.setDisplayShowHomeEnabled(true);
+        actionbar.setTitle("  DeliveryFFAP LogIn");
+        actionbar.setIcon(R.mipmap.moto_ab);
         email = (EditText) findViewById(R.id.editTextEmail);
         password = (EditText) findViewById(R.id.editTextEmail);
         login = (Button) findViewById(R.id.botonlogin);
@@ -51,8 +53,8 @@ public class MainActivity extends ActionBarActivity {
                 if ((!email.getText().toString().equals("")) && (!password.getText().toString().equals(""))) {
                     NetAsync(view);
                 } else if ((!email.getText().toString().equals(""))) {
-                    alertDialog.setTitle("No se pudo iniciar sesion");
-                    alertDialog.setMessage("El campo de la contrase�a est� vac�o, Por favor introduzca su contrase�a");
+                    alertDialog.setTitle("No se pudo iniciar sesión");
+                    alertDialog.setMessage("El campo de la contraseña está vacío, Por favor introduzca su contraseña");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -62,8 +64,8 @@ public class MainActivity extends ActionBarActivity {
                     alertDialog.show();
 
                 } else if ((!password.getText().toString().equals(""))) {
-                    alertDialog.setTitle("No se pudo iniciar sesi�n");
-                    alertDialog.setMessage("El campo de usuario est� vac�o, Por favor introduzca su nombre de usuario");
+                    alertDialog.setTitle("No se pudo iniciar sesión");
+                    alertDialog.setMessage("El campo de usuario está vacío, Por favor introduzca su nombre de usuario");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -72,8 +74,8 @@ public class MainActivity extends ActionBarActivity {
                             });
                     alertDialog.show();
                 } else {
-                    alertDialog.setTitle("No se pudo iniciar sesi�n");
-                    alertDialog.setMessage("Campo de usuario y contrase�a vac�os, Por favor introduzca su nombre de usuario y contrase�a");
+                    alertDialog.setTitle("No se pudo iniciar sesión");
+                    alertDialog.setMessage("Campo de usuario y contraseña vacíos, Por favor introduzca su nombre de usuario y contraseña");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -85,27 +87,6 @@ public class MainActivity extends ActionBarActivity {
             }
         });
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     private class NetCheck extends AsyncTask<String, String, Boolean> {
         private ProgressDialog nDialog;
@@ -114,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             nDialog = new ProgressDialog(MainActivity.this);
-            nDialog.setTitle("Verificando la conexi�n a Internet");
+            nDialog.setTitle("Verificando la conexión a Internet");
             nDialog.setMessage("Por favor, espere..");
             nDialog.setIndeterminate(false);
             nDialog.setCancelable(true);
@@ -156,8 +137,8 @@ public class MainActivity extends ActionBarActivity {
             } else {
                 nDialog.dismiss();
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("No se pudo iniciar sesi�n");
-                alertDialog.setMessage("Error al conectarse a la red, Por favor verifique su conexi�n a Internet");
+                alertDialog.setTitle("No se pudo iniciar sesión");
+                alertDialog.setMessage("Error al conectarse a la red, Por favor verifique su conexión a Internet");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -218,8 +199,8 @@ public class MainActivity extends ActionBarActivity {
 
                         pDialog.dismiss();
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                        alertDialog.setTitle("No se pudo iniciar sesi�n");
-                        alertDialog.setMessage("Nombre de usuario y/o contrase�a incorrectos, Por favor intentelo de nuevo");
+                        alertDialog.setTitle("No se pudo iniciar sesión");
+                        alertDialog.setMessage("Nombre de usuario y/o contraseña incorrectos, Por favor intentelo de nuevo");
                         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
