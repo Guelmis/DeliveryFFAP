@@ -20,40 +20,19 @@ import java.util.concurrent.ExecutionException;
 
 public class ServerSignal {
 
-    /*
-    public static final String loginURL = "http://10.0.0.21:3000/mobile_login/";
-    public static final String searchURL = "http://10.0.0.21:3000/product_query/search/";
-    public static final String spinnersURL = "http://10.0.0.21:3000/info_query/";
-    public static final String sellersURL = "http://10.0.0.21:3000/seller_query/";
-    public static final String productosURL = "http://10.0.0.21:3000/product_query/";
-    public static final String cartshowURL = "http://10.0.0.21:3000/cart_query/";
-    public static final String cartaddURL = "http://10.0.0.21:3000/cart_add/";
-    public static final String cartremoveURL = "http://10.0.0.21:3000/cart_remove/";
-    public static final String cartdestroyURL = "http://10.0.0.21:3000/cart_destroy/";
+   // public static final String domain = "http://10.0.0.20:5000/"; //local
+    public static final String domain = "http://ffap-itt-2015.herokuapp.com/"; //web
 
- //   public static final String trackidURL = "http://10.0.0.10:5000/tracking/get_id/";
-    public static final String tracksendURL = "http://10.0.0.10:5000/delivery_track/";
-    public static final String trackreceiveURL = "http://10.0.0.10:5000/tracking/";
-    public static final String deliverylistURL = "http://10.0.0.10:5000/delivery_list/";
-    public static final String deliveryshowURL = "http://10.0.0.10:5000/delivery_display/";
-    public static final String deliveryfinishURL = "http://10.0.0.10:5000/delivery_finish/";
-*/
-    public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login/";
-    public static final String tracksendURL = "http://ffap-itt-2015.herokuapp.com/delivery_track/";
-    public static final String trackreceiveURL = "http://ffap-itt-2015.herokuapp.com/tracking/";
-    public static final String deliverylistURL = "http://ffap-itt-2015.herokuapp.com/delivery_list/";
-    public static final String deliveryshowURL = "http://ffap-itt-2015.herokuapp.com/delivery_display/";
-    public static final String deliveryfinishURL = "http://ffap-itt-2015.herokuapp.com/delivery_finish/";
-
-    public static final String searchURL = "http://ffap-itt-2015.herokuapp.com/product_query/search/";
-    public static final String spinnersURL = "http://ffap-itt-2015.herokuapp.com/info_query/";
-    public static final String sellersURL = "http://ffap-itt-2015.herokuapp.com/seller_query/";
-    public static final String commentURL = "http://ffap-itt-2015.herokuapp.com/seller_query/comment/";
-    public static final String productosURL = "http://ffap-itt-2015.herokuapp.com/product_query/";
-    public static final String cartshowURL = "http://ffap-itt-2015.herokuapp.com/cart_query/";
-    public static final String cartaddURL = "http://ffap-itt-2015.herokuapp.com/cart_add/";
-    public static final String cartremoveURL = "http://ffap-itt-2015.herokuapp.com/cart_remove/";
-    public static final String cartdestroyURL = "http://ffap-itt-2015.herokuapp.com/cart_destroy/";
+    public static final String loginURL = domain + "mobile_login/";
+    public static final String sellersURL = domain + "seller_query/";
+    public static final String commentURL = domain + "seller_query/comment/";
+    public static final String productosURL = domain + "product_query/";
+    public static final String ordershowURL = domain + "order_api/";
+    public static final String tracksendURL = domain + "delivery_track/";
+    public static final String trackreceiveURL = domain + "tracking/";
+    public static final String deliverylistURL = domain + "delivery_list/";
+    public static final String deliveryshowURL = domain + "delivery_display/";
+    public static final String deliveryfinishURL = domain + "delivery_finish/";
 
     public static final String product_tag = "product";
     public static final String image_tag = "image_url";
@@ -98,26 +77,6 @@ public class ServerSignal {
         return ret;
     }
 
-    /*public static Integer getDeliveryID(){
-        ArrayList<NameValuePair> params = new ArrayList<>();
-        JSONObject answer = null;
-        Integer id = -1;
-
-        params.add(new BasicNameValuePair("id", id.toString()));
-
-        try {
-            answer = new JObjRequester().post(trackidURL, params);
-            id = Integer.parseInt(answer.getString("id"));
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return id;
-    }*/
     public static LatLng getLocation(Integer id){
         ArrayList<NameValuePair> params = new ArrayList<>();
         JSONObject answer = null;
@@ -211,10 +170,10 @@ public class ServerSignal {
                 for(int j=0; j<itemJarr.length(); j++){
                     piezas.add(new LineItem(new Product(
                             itemJarr.getJSONObject(j).getString("title"),
-                            itemJarr.getJSONObject(j).getJSONObject("brand").getString("brand_name"),
-                            itemJarr.getJSONObject(j).getJSONObject("model").getString("model_name"),
-                            itemJarr.getJSONObject(j).getString("image_url"),
-                            itemJarr.getJSONObject(j).getJSONObject("model").getInt("year"),
+                            itemJarr.getJSONObject(j).getJSONObject(brand_tag).getString("brand_name"),
+                            itemJarr.getJSONObject(j).getJSONObject(model_tag).getString("model_name"),
+                            itemJarr.getJSONObject(j).getString(image_tag),
+                            itemJarr.getJSONObject(j).getJSONObject(model_tag).getInt(year_tag),
                             itemJarr.getJSONObject(j).getString("id")),
                             itemJarr.getJSONObject(j).getJSONObject("item").getInt("quantity")));
                 }
@@ -262,7 +221,7 @@ public class ServerSignal {
 
         try {
             answer = new JObjRequester().post(deliveryfinishURL, params);
-            if(answer.getString("success").equals("true")){
+            if(answer.getString(KEY_SUCCESS).equals("true")){
                 ret = new BasicResponse(true, answer.getString(KEY_MESSAGE), "");
             }
             else {

@@ -162,7 +162,7 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     public void handleGetDirectionsResult(ArrayList directionPoints) {
         Polyline newPolyline;
         GoogleMap mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-        PolylineOptions rectLine = new PolylineOptions().width(8).color(Color.BLUE);
+        PolylineOptions rectLine = new PolylineOptions().width(4).color(Color.BLUE);
         for (int i = 0; i < directionPoints.size(); i++) {
             rectLine.add((LatLng) directionPoints.get(i));
         }
