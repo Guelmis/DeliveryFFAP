@@ -215,7 +215,7 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         ubicacion = new LatLng(location.getLatitude(), location.getLongitude());
 
         map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual"));
-        BasicResponse confirm = ServerSignal.sendLocation(Integer.parseInt(deliveryID), ubicacion);
+        BasicResponse confirm = ServerSignal.sendLocation(Integer.parseInt(deliveryID), ubicacion, tTotal.toString());
         Toast.makeText(Rutas.this, distTotal.toString() + " km " + tTotal.toString() + " min", Toast.LENGTH_LONG).show();
 
         if(!areaApplied){

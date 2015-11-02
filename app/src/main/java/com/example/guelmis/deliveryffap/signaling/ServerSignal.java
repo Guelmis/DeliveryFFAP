@@ -99,13 +99,14 @@ public class ServerSignal {
         return ret;
     }
 
-    public static BasicResponse sendLocation(Integer id, LatLng location){
+    public static BasicResponse sendLocation(Integer id, LatLng location, String eta){
         ArrayList<NameValuePair> params = new ArrayList<>();
         JSONObject answer = null;
         Double Latitude = location.latitude;
         Double Longitude = location.longitude;
         BasicResponse ret = new BasicResponse(false, "Error al enviar Localizacion", "");
 
+        params.add(new BasicNameValuePair("estimated_time", eta));
         params.add(new BasicNameValuePair("latitude", Latitude.toString()));
         params.add(new BasicNameValuePair("longitude", Longitude.toString()));
         params.add(new BasicNameValuePair("delivery_id", id.toString()));
