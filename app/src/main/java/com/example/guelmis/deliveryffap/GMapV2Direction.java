@@ -93,7 +93,7 @@ public class GMapV2Direction {
 
     public String getStartAddress (Document doc) {
         NodeList nl1 = doc.getElementsByTagName("start_address");
-        Node node1 = nl1.item(0);
+        Node node1 = nl1.item(nl1.getLength()-1);
         Log.i("StartAddress", node1.getTextContent());
         return node1.getTextContent();
     }

@@ -55,7 +55,6 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     private static Double tTotal;
     private int offset;
     Button paquete;
-    View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +205,7 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     }
 
     public void area(){
-         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ubicacion.latitude, ubicacion.longitude), 13f));
+         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ubicacion.latitude, ubicacion.longitude), 14f));
     }
 
     public void handleNewLocation(Location location) {
@@ -216,7 +215,18 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
 
         map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual"));
         BasicResponse confirm = ServerSignal.sendLocation(Integer.parseInt(deliveryID), ubicacion, tTotal.toString());
-        Toast.makeText(Rutas.this, distTotal.toString() + " km " + tTotal.toString() + " min", Toast.LENGTH_LONG).show();
+        Toast.makeText(Rutas.this, distTotal.toString() + " Km " + tTotal.toString() + " Min", Toast.LENGTH_LONG).show();
+      /*  if (startad== null && endadd == null) {
+            startaddress.setText("");
+            endadress.setText("");
+        }
+    else
+
+    {
+        startaddress.setText("Direccion Actual: " + startad);
+        endadress.setText("Direccion Destino: " + endadd);
+    }
+    */
 
         if(!areaApplied){
             CrearRuta(ubicacion, tiendas);
@@ -226,8 +236,8 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     }
 
     private void CrearRuta(LatLng _ubicacion, ArrayList<LatLng> destinos) {
-        int laststore = destinos.size()-1;
-        if(offset < destinos.size()){
+        int laststore = destinos.size() - 1;
+        if (offset < destinos.size()) {
             findDirections(_ubicacion.latitude, _ubicacion.longitude, destinos.get(offset).latitude, destinos.get(offset).longitude,
                     GMapV2Direction.MODE_DRIVING);
             map.addMarker(new MarkerOptions().position(destinos.get(offset)).title(markerTitle(offset)));
@@ -262,5 +272,8 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     public static void CalcEstimate(String distance, String duration){
         distTotal += Double.parseDouble(distance);
         tTotal += Double.parseDouble(duration);
+       /* startad = start_address ;
+        endadd = end_address;
+       */
     }
 }

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -54,7 +56,7 @@ public class Pedidos extends ActionBarActivity {
         }
         List = (ListView) findViewById(R.id.ListaPedidos);
 
-        adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datos);
+        adaptador = new ArrayAdapter<>(this, R.layout.listviewcolor, R.id.textView14, datos);
         List.setAdapter(adaptador);
         List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -63,44 +65,56 @@ public class Pedidos extends ActionBarActivity {
             public void onItemClick(AdapterView<?> arg0, View vista, int posicion, long arg3) {
                 Intent myIntent = new Intent(Pedidos.this, Rutas.class);
                 Bundle extras = new Bundle();
-                extras.putString("usuario",usuario);
+                extras.putString("usuario", usuario);
                 extras.putInt("offset", 0);
                 extras.putString("delivery_id", Integer.toString(deliveries.get(posicion).getId()));
                 myIntent.putExtras(extras);
                 startActivity(myIntent);
             }
         });
-    }
+        refresh.setOnClickListener(new View.OnClickListener() {
 
-    @Override
-    protected void onResume(){
-        super.onResume();
-        deliveries = ServerSignal.listDeliveries(usuario);
-        datos.clear();
-        for(int i=0; i<deliveries.size(); i++){
-            datos.add("Orden " + deliveries.get(i).getOrder_id() + "\n" + "Cliente: " + deliveries.get(i).getUsername());
-        }
-        adaptador.notifyDataSetChanged();
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.id_logout:
-                finishAffinity();
-                startActivity(new Intent(this, MainActivity.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+            public void onClick(View view) {
+                deliveries = ServerSignal.listDeliveries(usuario);
+                datos.clear();
+                for (int i = 0; i < deliveries.size(); i++) {
+                    datos.add("Orden " + deliveries.get(i).getOrder_id() + "\n" + "Cliente: " + deliveries.get(i).getUsername());
+                }
+                adaptador.notifyDataSetChanged();
+                    }
+            }
+        );
 }
+            @Override
+            protected void onResume() {
+                super.onResume();
+                deliveries = ServerSignal.listDeliveries(usuario);
+                datos.clear();
+                for (int i = 0; i < deliveries.size(); i++) {
+                    datos.add("Orden " + deliveries.get(i).getOrder_id() + "\n" + "Cliente: " + deliveries.get(i).getUsername());
+                }
+                adaptador.notifyDataSetChanged();
+            }
+
+            @Override
+            public boolean onCreateOptionsMenu(Menu menu) {
+                // Inflate the menu; this adds items to the action bar if it is present.
+                getMenuInflater().inflate(R.menu.menu_main, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onOptionsItemSelected(MenuItem item) {
+                // Handle action bar item clicks here. The action bar will
+                // automatically handle clicks on the Home/Up button, so long
+                // as you specify a parent activity in AndroidManifest.xml.
+                switch (item.getItemId()) {
+                    case R.id.id_logout:
+                        finishAffinity();
+                        startActivity(new Intent(this, MainActivity.class));
+                        return true;
+                    default:
+                        return super.onOptionsItemSelected(item);
+                }
+            }
+        }
