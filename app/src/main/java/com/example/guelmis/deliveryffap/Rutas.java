@@ -6,9 +6,9 @@ import java.util.Map;
 
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.view.View.OnClickListener;
 
-import com.example.guelmis.deliveryffap.models.Delivery;
+import com.example.guelmis.deliveryffap.models.Customer;
+import com.example.guelmis.deliveryffap.models.MultipleDelivery;
 import com.example.guelmis.deliveryffap.signaling.BasicResponse;
 import com.example.guelmis.deliveryffap.signaling.ServerSignal;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,35 +25,28 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AbsoluteLayout;
 import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Document;
 
 public class Rutas extends FragmentActivity implements LocationProvider.LocationCallback {
     public static final String TAG = Rutas.class.getSimpleName();
     private LocationProvider mLocationProvider;
     private GoogleMap map;
-    private ArrayList<LatLng> tiendas;
-    private LatLng cliente1;
-    private LatLng cliente2;
+    private ArrayList<LatLng> ubicacionesTiendas;
+    private ArrayList<LatLng> ubicacionesClientes;
     private static LatLng ubicacion = new LatLng(0,0);
     private Polyline newPolyline;
     private LatLngBounds latlngBounds;
     private boolean areaApplied;
-    private String deliveryID;
     private String usuario;
-    private Delivery fulldeliveryinfo;
+    private MultipleDelivery fulldeliveryinfo;
     private static Double distTotal;
     private static Double tTotal;
     private int offset;
+    private boolean lastRoute;
     Button paquete;
     View view;
 
@@ -62,22 +55,33 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ruta);
         paquete = (Button) findViewById(R.id.btnpackage);
-     //   cliente2 = new LatLng(18.483255, -69.939677);
-        tiendas = new ArrayList<>();
-
         final Bundle points = getIntent().getExtras();
-
-        deliveryID = points.getString("delivery_id");
         usuario = points.getString("usuario");
-        offset = points.getInt("offset");
-        fulldeliveryinfo = ServerSignal.getFullDelivery(deliveryID);
+        fulldeliveryinfo = ServerSignal.getSeveralDeliveries(getDeliveryIDsfromBundle(points));
 
-        for(int i=0; i<fulldeliveryinfo.getSellers().size(); i++){
-            tiendas.add(fulldeliveryinfo.getSellers().get(i).getLocation());
+        if(fulldeliveryinfo == null){
+            AlertDialog alertDialog = new AlertDialog.Builder(Rutas.this).create();
+            alertDialog.setTitle("Error de cominicacion");
+            alertDialog.setMessage("No se pudo comunicar con el servidor, Por favor intentelo mas tarde.");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    });
+            alertDialog.show();
         }
 
-        cliente1 = fulldeliveryinfo.getUserLocation();
+        ubicacionesClientes = fulldeliveryinfo.getAllCustomerLocations();
+
+        //Ordena las posiciones de las tiendas de acuerdo al primer cliente.
+        ubicacionesTiendas = byDistance(ubicacionesClientes.get(0), fulldeliveryinfo.getAllSellerLocations());
+
+        offset = points.getInt("offset");
+
         areaApplied = false;
+        lastRoute =false;
 
         mLocationProvider = new LocationProvider(this, this);
         try
@@ -88,33 +92,23 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         catch(Exception e) {
             e.printStackTrace();
         }
-    //    for(int i=0; i<tiendas.size(); i++) {
-     //       map.addMarker(new MarkerOptions().position(tiendas.get(i)));
-     //   }
 
-        map.addMarker(new MarkerOptions().position(cliente1)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                .title("Cliente "+ fulldeliveryinfo.getUsername()));
-  //      map.addMarker(new MarkerOptions().position(cliente2)
-   //             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        for (int i=offsetCustomers(); i<ubicacionesClientes.size(); i++){
+            map.addMarker(new MarkerOptions().position(ubicacionesClientes.get(i))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                    .title("Cliente "+ fulldeliveryinfo.getCustomers().get(i).getName()));
+        }
 
         distTotal=0.0;
         tTotal=0.0;
         paquete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(offset < fulldeliveryinfo.getSellers().size()){
-                    Intent myIntent = new Intent(Rutas.this, Rutas.class);
-                    Bundle extras = new Bundle();
-                    extras.putString("usuario", usuario);
-                    extras.putString("delivery_id", deliveryID);
-                    extras.putInt("offset", offset + 1);
-
-                    myIntent.putExtras(extras);
-                    finish();
-                    startActivity(myIntent);
+                if(offsetSellers() != -1){
+                    restartWithOffset();
                 }
                 else {
+                  //  final Customer cliente = fulldeliveryinfo.getCustomers().get(offsetCustomers());
                     AlertDialog alertDialog = new AlertDialog.Builder(Rutas.this).create();
                     alertDialog.setTitle("Confirmar la entrega de la orden");
                     alertDialog.setMessage("Confirmar que la orden se entrego satisfactoriamente?");
@@ -122,12 +116,23 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    BasicResponse answer = ServerSignal.finishDelivery(deliveryID);
-                                    if(answer.success()){
-                                        finish();
+                                    if(offset == ubicacionesTiendas.size() + ubicacionesClientes.size() -1){
+                                        BasicResponse answer = finishDeliveries(fulldeliveryinfo.getCustomers().get(0).getDeliveryIDs());
+                                        for(int i=1; i< fulldeliveryinfo.getCustomers().size(); i++){
+                                            BasicResponse current = finishDeliveries(fulldeliveryinfo.getCustomers().get(i).getDeliveryIDs());
+                                            if(!current.success()){
+                                                answer = current;
+                                            }
+                                        }
+                                        if(answer.success()){
+                                            finish();
+                                        }
+                                        else {
+                                            Toast.makeText(Rutas.this, answer.getMessage(), Toast.LENGTH_LONG).show();
+                                        }
                                     }
                                     else {
-                                        Toast.makeText(Rutas.this, answer.getMessage(), Toast.LENGTH_LONG).show();
+                                        restartWithOffset();
                                     }
                                 }
                             });
@@ -141,7 +146,7 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
                 }
             }
         });
-        if(offset == fulldeliveryinfo.getSellers().size()){
+        if(offsetSellers() == -1){
             paquete.setText("Orden Entregada");
         }
     }
@@ -162,10 +167,17 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     public void handleGetDirectionsResult(ArrayList directionPoints) {
         Polyline newPolyline;
         GoogleMap mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-        PolylineOptions rectLine = new PolylineOptions().width(4).color(Color.BLUE);
+        PolylineOptions rectLine;
+        if(!lastRoute){
+            rectLine = new PolylineOptions().width(4).color(Color.BLUE);
+        }
+        else{
+            rectLine = new PolylineOptions().width(8).color(Color.RED);
+        }
         for (int i = 0; i < directionPoints.size(); i++) {
             rectLine.add((LatLng) directionPoints.get(i));
         }
+        lastRoute = false;
         newPolyline = mMap.addPolyline(rectLine);
     }
 
@@ -179,7 +191,8 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         }
         return null;
     }
-    public void findDirections(double fromPositionDoubleLat, double fromPositionDoubleLong, double toPositionDoubleLat, double toPositionDoubleLong, String mode)
+    public void findDirections(double fromPositionDoubleLat, double fromPositionDoubleLong,
+                               double toPositionDoubleLat, double toPositionDoubleLong, String mode)
     {
         Map<String, String> map = new HashMap<String, String>();
         map.put(GetDirectionsAsyncTask.USER_CURRENT_LAT, String.valueOf(fromPositionDoubleLat));
@@ -209,17 +222,60 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
          map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ubicacion.latitude, ubicacion.longitude), 13f));
     }
 
+    private double calcDistancia(LatLng punto1, LatLng punto2){
+        float[] res = new float[3];
+        Location.distanceBetween(punto1.latitude, punto1.longitude, punto2.latitude, punto2.longitude, res);
+        return res[0];
+    }
+
+    private ArrayList<LatLng> byDistance(LatLng reference, ArrayList<LatLng> input){
+        ArrayList<LatLng> ret = new ArrayList<>();
+
+        ArrayList<Double> distances = new ArrayList<>();
+        HashMap<Double, LatLng> map = new HashMap<>();
+        for(int i=0; i<input.size(); i++){
+            Double dist = calcDistancia(reference, input.get(i));
+            distances.add(dist);
+            map.put(dist, input.get(i));
+        }
+
+        ArrayList<Double> ordered = new ArrayList<>();
+        Double mayor;
+        int index = 0;
+
+        while(distances.size() > 0){
+            mayor = distances.get(distances.size()-1);
+            for (int i=0; i<distances.size(); i++){
+                if(mayor <= distances.get(i)){
+                    mayor = distances.get(i);
+                    index = i;
+                }
+            }
+            distances.remove(index);
+            ordered.add(mayor);
+        }
+
+        for (int i=0; i<ordered.size(); i++){
+            ret.add(map.get(ordered.get(i)));
+        }
+
+        int i =0;
+
+        return ret;
+    }
+
     public void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
         //Toast.makeText(Rutas.this, "Moviendo " + currentLatitude + " " + currentLongitude, Toast.LENGTH_LONG).show();
         ubicacion = new LatLng(location.getLatitude(), location.getLongitude());
 
         map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual"));
-        BasicResponse confirm = ServerSignal.sendLocation(Integer.parseInt(deliveryID), ubicacion, tTotal.toString());
-        Toast.makeText(Rutas.this, distTotal.toString() + " km " + tTotal.toString() + " min", Toast.LENGTH_LONG).show();
+        BasicResponse confirm = updateLocation(fulldeliveryinfo.getAllDeliveryIDs());
+        //Toast.makeText(Rutas.this, distTotal.toString() + " km " + tTotal.toString() + " min", Toast.LENGTH_LONG).show();
+        Toast.makeText(Rutas.this, offset + " " +  offsetSellers() + " " + offsetCustomers() + " " + ubicacionesTiendas.size(), Toast.LENGTH_LONG).show();
 
         if(!areaApplied){
-            CrearRuta(ubicacion, tiendas);
+            CrearRuta(ubicacion, ubicacionesTiendas);
             area();
             areaApplied = true;
         }
@@ -227,27 +283,40 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
 
     private void CrearRuta(LatLng _ubicacion, ArrayList<LatLng> destinos) {
         int laststore = destinos.size()-1;
-        if(offset < destinos.size()){
-            findDirections(_ubicacion.latitude, _ubicacion.longitude, destinos.get(offset).latitude, destinos.get(offset).longitude,
-                    GMapV2Direction.MODE_DRIVING);
-            map.addMarker(new MarkerOptions().position(destinos.get(offset)).title(markerTitle(offset)));
+        if(offsetSellers() != -1){
+            lastRoute = true;
+            findDirections(_ubicacion.latitude, _ubicacion.longitude, destinos.get(offsetSellers()).latitude,
+                    destinos.get(offsetSellers()).longitude,GMapV2Direction.MODE_DRIVING);
+            map.addMarker(new MarkerOptions().position(destinos.get(offsetSellers())).title(markerTitle(offsetSellers())));
 
-            for(int i=offset+1; i<destinos.size(); i++){
-                findDirections(destinos.get(i - 1).latitude, destinos.get(i - 1).longitude, destinos.get(i).latitude, destinos.get(i).longitude,
-                        GMapV2Direction.MODE_DRIVING);
+            for(int i=offsetSellers()+1; i<destinos.size(); i++){
+                findDirections(destinos.get(i - 1).latitude, destinos.get(i - 1).longitude, destinos.get(i).latitude,
+                        destinos.get(i).longitude, GMapV2Direction.MODE_DRIVING);
                 map.addMarker(new MarkerOptions().position(destinos.get(i)).title(markerTitle(i)));
             }
 
-            findDirections(destinos.get(laststore).latitude, destinos.get(laststore).longitude, cliente1.latitude, cliente1.longitude,
-                    GMapV2Direction.MODE_DRIVING);
+            if(offsetCustomers() == 0){
+                findDirections(destinos.get(laststore).latitude, destinos.get(laststore).longitude, ubicacionesClientes.get(0).latitude,
+                        ubicacionesClientes.get(0).longitude, GMapV2Direction.MODE_DRIVING);
+            }
+            for(int i=offsetCustomers()+1; i<ubicacionesClientes.size(); i++){
+                findDirections(ubicacionesClientes.get(i-1).latitude, ubicacionesClientes.get(i-1).longitude,
+                        ubicacionesClientes.get(i).latitude, ubicacionesClientes.get(i).longitude, GMapV2Direction.MODE_DRIVING);
+            }
         }
         else{
-            findDirections(_ubicacion.latitude, _ubicacion.longitude, cliente1.latitude, cliente1.longitude,
-                    GMapV2Direction.MODE_DRIVING);
+            lastRoute = true;
+            findDirections(_ubicacion.latitude, _ubicacion.longitude, ubicacionesClientes.get(offsetCustomers()).latitude,
+                    ubicacionesClientes.get(offsetCustomers()).longitude, GMapV2Direction.MODE_DRIVING);
+
+            if(ubicacionesClientes.size() > 1){
+                for(int i=offsetCustomers()+1; i<ubicacionesClientes.size(); i++){
+                    findDirections(ubicacionesClientes.get(i-1).latitude, ubicacionesClientes.get(i-1).longitude,
+                            ubicacionesClientes.get(i).latitude, ubicacionesClientes.get(i).longitude, GMapV2Direction.MODE_DRIVING);
+                }
+            }
         }
 
-  //      findDirections(cliente1.latitude, cliente1.longitude, cliente2.latitude, cliente2.longitude,
-    //            GMapV2Direction.MODE_DRIVING);
     }
 
     private String markerTitle(int index){
@@ -263,4 +332,94 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         distTotal += Double.parseDouble(distance);
         tTotal += Double.parseDouble(duration);
     }
+
+    private ArrayList<Integer> getDeliveryIDsfromBundle(Bundle bundle){
+        ArrayList<Integer> ids = new ArrayList<>();
+        for(int i=0; i<bundle.getInt("cantidad"); i++){
+            ids.add(bundle.getInt("delivery_id" + i));
+        }
+        return ids;
+    }
+
+    private int offsetSellers(){
+        return offset < ubicacionesTiendas.size() ? offset : -1;
+    }
+
+    private int offsetCustomers(){
+        if(offset < ubicacionesTiendas.size()){
+            return 0;
+        }
+        return offset < ubicacionesClientes.size() + ubicacionesTiendas.size() ? offset - ubicacionesTiendas.size() : -1;
+    }
+
+    private BasicResponse updateLocation(ArrayList<Integer> ids){
+        BasicResponse ret;
+
+        ret = ServerSignal.sendLocation(ids.get(0), ubicacion, tTotal.toString());
+        if(ret.success()){
+            for(int i=1; i<ids.size(); i++){
+                BasicResponse temp = ServerSignal.sendLocation(ids.get(i), ubicacion, tTotal.toString());
+                if(!temp.success()){
+                    ret = temp;
+                }
+            }
+        }
+
+
+        return ret;
+    }
+
+    private BasicResponse finishDeliveries(ArrayList<Integer> ids){
+        BasicResponse ret;
+
+        ret = ServerSignal.finishDelivery(Integer.toString(ids.get(0)));
+        if(ret.success()){
+            for(int i=1; i<ids.size(); i++){
+                BasicResponse temp = ServerSignal.finishDelivery(Integer.toString(ids.get(i)));
+                if(!temp.success()){
+                    ret = temp;
+                }
+            }
+        }
+        return ret;
+    }
+
+    private void restartWithOffset(){
+        Intent myIntent = new Intent(Rutas.this, Rutas.class);
+        Bundle extras = new Bundle();
+        extras.putString("usuario", usuario);
+
+        ArrayList<Customer> custs = fulldeliveryinfo.getCustomers();
+        int idcount = 0;
+        int init;
+       /* if (offsetSellers() == -1){
+            init = offsetCustomers()+1;
+            extras.putInt("offset", offset);
+        }
+        else{
+        }*/
+        //init =offsetCustomers();
+        extras.putInt("offset", offset + 1);
+        for(int i = 0; i<custs.size(); i++){
+            for(Integer delid :custs.get(i).getDeliveryIDs()){
+                extras.putInt("delivery_id" + idcount, delid);
+                idcount++;
+            }
+        }
+        extras.putInt("cantidad", idcount);
+
+        myIntent.putExtras(extras);
+        finish();
+        startActivity(myIntent);
+    }
+
+    /*
+    ArrayList<Integer> ids = fulldeliveryinfo.getAllDeliveryIDs();
+        extras.putInt("cantidad", ids.size());
+        for(int i=0; i<ids.size(); i++){
+            extras.putInt("delivery_id" + i, ids.get(i));
+        }
+
+
+    */
 }

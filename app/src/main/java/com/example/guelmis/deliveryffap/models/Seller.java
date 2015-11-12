@@ -2,6 +2,9 @@ package com.example.guelmis.deliveryffap.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.ArrayList;
 
 public class Seller {
@@ -50,6 +53,48 @@ public class Seller {
     }
     public LatLng getLocation() {
         return location;
+    }
+
+    public void absorbProductList(ArrayList<LineItem> list){
+        for (LineItem thisItem: list) {
+            if (products.contains(thisItem)){
+                int index = products.indexOf(thisItem);
+                products.get(index).setQuantity(products.get(index).getQuantity() + thisItem.getQuantity());
+            }
+            else{
+                products.add(thisItem);
+            }
+        }
+    }
+    
+    @Override
+    public int hashCode(){
+
+        return new HashCodeBuilder(13, 29).append(id).
+                append(name).
+                append(address).
+                append(phone).
+                append(location).
+                toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof Seller)){
+            return false;
+        }
+        if(obj == this){
+            return true;
+        }
+
+        Seller tocomp = (Seller) obj;
+        return new EqualsBuilder().
+                append(id, tocomp.id).
+                append(name, tocomp.name).
+                append(address, tocomp.address).
+                append(phone, tocomp.phone).
+                append(location, tocomp.location).
+                isEquals();
     }
 
 }

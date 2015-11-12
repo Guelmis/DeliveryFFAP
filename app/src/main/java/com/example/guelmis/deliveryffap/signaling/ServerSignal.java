@@ -1,10 +1,13 @@
 package com.example.guelmis.deliveryffap.signaling;
 
+import com.example.guelmis.deliveryffap.models.Customer;
 import com.example.guelmis.deliveryffap.models.Delivery;
 import com.example.guelmis.deliveryffap.models.DeliveryInfo;
 import com.example.guelmis.deliveryffap.models.LineItem;
+import com.example.guelmis.deliveryffap.models.MultipleDelivery;
 import com.example.guelmis.deliveryffap.models.Product;
 import com.example.guelmis.deliveryffap.models.Seller;
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.apache.http.NameValuePair;
@@ -15,12 +18,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ServerSignal {
 
-   // public static final String domain = "http://10.0.0.20:5000/"; //local
+    //public static final String domain = "http://10.0.0.23:5000/"; //local
     public static final String domain = "http://ffap-itt-2015.herokuapp.com/"; //web
 
     public static final String loginURL = domain + "mobile_login/";
@@ -166,21 +170,11 @@ public class ServerSignal {
             JSONArray sellerJarr = answer.getJSONArray("sellers");
 
             for(int i=0; i<sellerJarr.length(); i++){
-                ArrayList<LineItem> piezas = new ArrayList<>();
                 JSONArray itemJarr = sellerJarr.getJSONObject(i).getJSONArray("items");
-                for(int j=0; j<itemJarr.length(); j++){
-                    piezas.add(new LineItem(new Product(
-                            itemJarr.getJSONObject(j).getString("title"),
-                            itemJarr.getJSONObject(j).getJSONObject(brand_tag).getString("brand_name"),
-                            itemJarr.getJSONObject(j).getJSONObject(model_tag).getString("model_name"),
-                            itemJarr.getJSONObject(j).getString(image_tag),
-                            itemJarr.getJSONObject(j).getJSONObject(model_tag).getInt(year_tag),
-                            itemJarr.getJSONObject(j).getString("id")),
-                            itemJarr.getJSONObject(j).getJSONObject("item").getInt("quantity")));
-                }
-                LatLng location = new LatLng(
-                        sellerJarr.getJSONObject(i).getJSONObject("location").getDouble("latitude"),
-                        sellerJarr.getJSONObject(i).getJSONObject("location").getDouble("longitude"));
+
+                ArrayList<LineItem> piezas = extractLineItems(itemJarr);
+                LatLng location = extractLocation(sellerJarr.getJSONObject(i));
+
                 sellers.add(new Seller(
                         sellerJarr.getJSONObject(i).getJSONObject("seller").getString("id"),
                         sellerJarr.getJSONObject(i).getJSONObject("seller").getString("name"),
@@ -191,9 +185,7 @@ public class ServerSignal {
                 ));
             }
 
-            LatLng userLocation = new LatLng(
-                    answer.getJSONObject("location").getDouble("latitude"),
-                    answer.getJSONObject("location").getDouble("longitude"));
+            LatLng userLocation = extractLocation(answer);
 
             ret = new Delivery(
                     answer.getInt("id"),
@@ -208,6 +200,75 @@ public class ServerSignal {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+        return ret;
+    }
+
+    public static MultipleDelivery getSeveralDeliveries(ArrayList<Integer> delivery_ids_input){
+        ArrayList<NameValuePair> params = new ArrayList<>();
+        ArrayList<JSONObject> answers = new ArrayList<>();
+        MultipleDelivery ret = null;
+
+        try {
+            for(Integer ID : delivery_ids_input){
+                params.add(new BasicNameValuePair("delivery_id", Integer.toString(ID)));
+                answers.add(new JObjRequester().post(deliveryshowURL, params));
+                params.clear();
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        try {
+            ArrayList<Seller> sellers = new ArrayList<>();
+            ArrayList<Customer> customers = new ArrayList<>();
+
+            for (JSONObject deliveryJSON : answers){
+                JSONArray sellerJarr = deliveryJSON.getJSONArray("sellers");
+                ArrayList<LineItem> customerItems = new ArrayList<>();
+
+                for(int i=0; i<sellerJarr.length(); i++){
+                    Seller thisSeller = new Seller(
+                            sellerJarr.getJSONObject(i).getJSONObject("seller").getString("id"),
+                            sellerJarr.getJSONObject(i).getJSONObject("seller").getString("name"),
+                            sellerJarr.getJSONObject(i).getJSONObject("seller").getString("address"),
+                            sellerJarr.getJSONObject(i).getJSONObject("seller").getString("phone"),
+                            extractLocation(sellerJarr.getJSONObject(i)),
+                            extractLineItems(sellerJarr.getJSONObject(i).getJSONArray("items"))
+                    );
+
+                    if (sellers.contains(thisSeller)){
+                        int index = sellers.indexOf(thisSeller);
+                        sellers.get(index).absorbProductList(thisSeller.getProducts());
+                    }
+                    else{
+                        sellers.add(thisSeller);
+                    }
+                    //Es importante que se extraiga la lista del JSON de nuevo.
+                    customerItems.addAll(extractLineItems(sellerJarr.getJSONObject(i).getJSONArray("items")));
+                }
+                Customer thisCustomer = new Customer(
+                        deliveryJSON.getJSONObject("client").getString("username"),
+                        deliveryJSON.getInt("id"),
+                        deliveryJSON.getJSONObject("order").getInt("id"),
+                        extractLocation(deliveryJSON),
+                        customerItems);
+                if(customers.contains(thisCustomer)){
+                    int index = customers.indexOf(thisCustomer);
+                    customers.get(index).mergeCustomer(thisCustomer);
+                }
+                else {
+                    customers.add(thisCustomer);
+                }
+            }
+
+            ret = new MultipleDelivery(customers, sellers);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
         }
 
         return ret;
@@ -235,6 +296,30 @@ public class ServerSignal {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        return ret;
+    }
+
+    private static ArrayList<LineItem> extractLineItems(JSONArray litemsJson) throws JSONException {
+        ArrayList<LineItem> ret = new ArrayList<>();
+
+        for(int j=0; j<litemsJson.length(); j++){
+            ret.add(new LineItem(new Product(
+                    litemsJson.getJSONObject(j).getString("title"),
+                    litemsJson.getJSONObject(j).getJSONObject(brand_tag).getString("brand_name"),
+                    litemsJson.getJSONObject(j).getJSONObject(model_tag).getString("model_name"),
+                    litemsJson.getJSONObject(j).getString(image_tag),
+                    litemsJson.getJSONObject(j).getJSONObject(model_tag).getInt(year_tag),
+                    litemsJson.getJSONObject(j).getString("id")),
+                    litemsJson.getJSONObject(j).getJSONObject("item").getInt("quantity")));
+        }
+        return ret;
+    }
+
+    private static LatLng extractLocation(JSONObject locationJSON) throws JSONException {
+        LatLng ret = new LatLng(
+                locationJSON.getJSONObject("location").getDouble("latitude"),
+                locationJSON.getJSONObject("location").getDouble("longitude"));
 
         return ret;
     }

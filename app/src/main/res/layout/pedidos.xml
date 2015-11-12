@@ -9,9 +9,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/btnrefresh"
         android:background="@android:drawable/stat_notify_sync"
+        android:layout_marginTop="45dp"
         android:layout_below="@+id/textViewUser"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="46dp" />
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -29,4 +29,14 @@
         android:id="@+id/ListaPedidos"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/btnrefresh" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trazar Ruta"
+        android:id="@+id/btnruta"
+        android:layout_alignTop="@+id/btnrefresh"
+        android:layout_alignParentEnd="true"
+        android:background="#D32F2F"
+        android:textColor="#FFFFFF" />
 </RelativeLayout>

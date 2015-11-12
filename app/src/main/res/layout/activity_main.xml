@@ -46,7 +46,8 @@
         android:background="#D32F2F"
         android:padding="12sp"
         android:layout_below="@+id/editTextPass"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignEnd="@+id/editTextPass"
+        android:layout_alignStart="@+id/editTextPass" />
 
 </RelativeLayout>
 
