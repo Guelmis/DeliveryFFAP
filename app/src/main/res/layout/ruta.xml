@@ -7,7 +7,7 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="470dp"
+        android:layout_height="450dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
 
@@ -21,16 +21,5 @@
         android:background="#D32F2F"
         android:textColor="#FFFFFF"
         android:padding="12sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Piezas"
-        android:id="@+id/textViewPiezas"
-        android:textColor="#FFFFFF"
-        android:layout_above="@+id/btnpackage"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="46dp" />
 
 </RelativeLayout>
