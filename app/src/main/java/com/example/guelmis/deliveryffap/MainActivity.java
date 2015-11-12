@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
                 } else if ((!email.getText().toString().equals(""))) {
                     alertDialog.setTitle("No se pudo iniciar sesión");
                     alertDialog.setMessage("El campo de la contraseña está vacío, Por favor introduzca su contraseña");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -66,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
                 } else if ((!password.getText().toString().equals(""))) {
                     alertDialog.setTitle("No se pudo iniciar sesión");
                     alertDialog.setMessage("El campo de usuario está vacío, Por favor introduzca su nombre de usuario");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -76,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
                 } else {
                     alertDialog.setTitle("No se pudo iniciar sesión");
                     alertDialog.setMessage("Campo de usuario y contraseña vacíos, Por favor introduzca su nombre de usuario y contraseña");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -139,7 +139,7 @@ public class MainActivity extends ActionBarActivity {
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                 alertDialog.setTitle("No se pudo iniciar sesión");
                 alertDialog.setMessage("Error al conectarse a la red, Por favor verifique su conexión a Internet");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -201,7 +201,7 @@ public class MainActivity extends ActionBarActivity {
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setTitle("No se pudo iniciar sesión");
                         alertDialog.setMessage("Nombre de usuario y/o contraseña incorrectos, Por favor intentelo de nuevo");
-                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();

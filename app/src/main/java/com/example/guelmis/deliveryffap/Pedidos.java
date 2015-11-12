@@ -84,7 +84,7 @@ public class Pedidos extends ActionBarActivity {
                 AlertDialog alertDialog = new AlertDialog.Builder(Pedidos.this).create();
                 alertDialog.setTitle("Ningun pedido seleccionado");
                 alertDialog.setMessage("Por favor seleccione por lo menos un pedido.");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
