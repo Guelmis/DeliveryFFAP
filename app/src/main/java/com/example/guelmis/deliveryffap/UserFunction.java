@@ -8,10 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.example.guelmis.deliveryffap.signaling.JSONParser;
+import com.example.guelmis.deliveryffap.signaling.ServerSignal;
 
 public class UserFunction {
     private JSONParser jsonParser;
-    public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login";
+    public static final String loginURL = ServerSignal.domain + "mobile_login/";
+    //public static final String loginURL = "http://ffap-itt-2015.herokuapp.com/mobile_login";
     //public static final String loginURL = "http://10.0.0.23:5000/mobile_login/";
     public static final String searchURL = "http://ffap-itt-2015.herokuapp.com/product_query/search";
     public static final String spinnersURL = "http://ffap-itt-2015.herokuapp.com/info_query";

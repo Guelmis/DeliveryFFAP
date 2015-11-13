@@ -45,6 +45,8 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     private MultipleDelivery fulldeliveryinfo;
     private static Double distTotal;
     private static Double tTotal;
+    private static ArrayList<Double> partialDist = new ArrayList<>();
+    private static ArrayList<Double> partialTime = new ArrayList<>();
     private int offset;
     private boolean lastRoute;
     Button paquete;
@@ -270,9 +272,10 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         ubicacion = new LatLng(location.getLatitude(), location.getLongitude());
 
         map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual"));
-        BasicResponse confirm = updateLocation(fulldeliveryinfo.getAllDeliveryIDs());
+        BasicResponse confirm = updateLocation();
         //Toast.makeText(Rutas.this, distTotal.toString() + " km " + tTotal.toString() + " min", Toast.LENGTH_LONG).show();
-        Toast.makeText(Rutas.this, offset + " " +  offsetSellers() + " " + offsetCustomers() + " " + ubicacionesTiendas.size(), Toast.LENGTH_LONG).show();
+        Toast.makeText(Rutas.this, offset + " " +  offsetSellers() + " " + offsetCustomers() + " " +
+                ubicacionesTiendas.size(), Toast.LENGTH_LONG).show();
 
         if(!areaApplied){
             CrearRuta(ubicacion, ubicacionesTiendas);
@@ -330,7 +333,9 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
 
     public static void CalcEstimate(String distance, String duration){
         distTotal += Double.parseDouble(distance);
+        partialDist.add(Double.parseDouble(distance));
         tTotal += Double.parseDouble(duration);
+        partialTime.add(Double.parseDouble(duration));
     }
 
     private ArrayList<Integer> getDeliveryIDsfromBundle(Bundle bundle){
@@ -352,20 +357,40 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         return offset < ubicacionesClientes.size() + ubicacionesTiendas.size() ? offset - ubicacionesTiendas.size() : -1;
     }
 
-    private BasicResponse updateLocation(ArrayList<Integer> ids){
+    private BasicResponse updateLocation(){
         BasicResponse ret;
 
-        ret = ServerSignal.sendLocation(ids.get(0), ubicacion, tTotal.toString());
-        if(ret.success()){
-            for(int i=1; i<ids.size(); i++){
-                BasicResponse temp = ServerSignal.sendLocation(ids.get(i), ubicacion, tTotal.toString());
-                if(!temp.success()){
-                    ret = temp;
-                }
+        ArrayList<Double> timesPerUser = new ArrayList<>();
+        Double psum = 0.0;
+
+        for(int i=0; i<partialTime.size(); i++){
+            psum += partialTime.get(i);
+            if(i>=ubicacionesTiendas.size()){
+                timesPerUser.add(psum);
             }
         }
 
-
+        int i=0;
+       // int initialid = fulldeliveryinfo.getCustomers().get(i).getDeliveryIDs().get(i);
+        ret = ServerSignal.sendLocation(i, ubicacion, "0.0");
+        if(partialTime.size() > 0){
+            boolean success = false;
+            for(Customer client : fulldeliveryinfo.getCustomers()){
+                for (int id : client.getDeliveryIDs()){
+                    if(success){
+                        BasicResponse temp = ServerSignal.sendLocation(id, ubicacion, Double.toString(timesPerUser.get(i) * 1.25).split("\\.")[0]);
+                        if(!temp.success()){
+                            ret = temp;
+                        }
+                    }
+                    else{
+                        ret = ServerSignal.sendLocation(id, ubicacion, Double.toString(timesPerUser.get(i) * 1.25).split("\\.")[0]);
+                        success = ret.success();
+                    }
+                    i++;
+                }
+            }
+        }
         return ret;
     }
 
