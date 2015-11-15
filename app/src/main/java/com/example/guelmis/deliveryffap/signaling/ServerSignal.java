@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ServerSignal {
-
-    //public static final String domain = "http://10.0.0.23:5000/"; //local
+   // public static final String domain = "http://10.0.0.23:5000/"; //local
     public static final String domain = "http://ffap-itt-2015.herokuapp.com/"; //web
 
     public static final String loginURL = domain + "mobile_login/";

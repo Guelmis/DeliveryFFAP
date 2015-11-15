@@ -1,6 +1,8 @@
 package com.example.guelmis.deliveryffap;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -10,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,21 +39,28 @@ public class Pedidos extends ActionBarActivity {
     TextView user;
     Button ruta;
     android.support.v7.app.ActionBar actionbar;
+    private int orderquant;
+    private Toolbar toolbar;
+    private TextView textViewDate,textViewCantidad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pedidos);
+        setActionBar();
+        //        actionbar = getSupportActionBar();
+//        actionbar.setDisplayShowHomeEnabled(true);
+//        actionbar.setTitle("  DeliveryFFAP Ordenes");
+//        actionbar.setIcon(R.mipmap.moto_ab);
         ruta = (Button) findViewById(R.id.btnruta);
-        actionbar = getSupportActionBar();
-        actionbar.setDisplayShowHomeEnabled(true);
-        actionbar.setTitle("  DeliveryFFAP Ordenes");
-        actionbar.setIcon(R.mipmap.moto_ab);
         refresh = (Button) findViewById (R.id.btnrefresh);
         user = (TextView) findViewById(R.id.textViewUser);
+        textViewDate = (TextView) findViewById(R.id.textViewDate);
+        textViewCantidad = (TextView) findViewById(R.id.textViewPeiddosCantidad);
+        textViewDate.setText(getCurrentDate());
         Intent myIntent = getIntent();
         usuario = myIntent.getStringExtra("usuario");
-        user.setText("Ordenes pendientes para " + usuario);
+        user.setText(usuario);
         datos = new ArrayList<>();
         usuario = getIntent().getStringExtra("usuario");
         deliveries = ServerSignal.listDeliveries(usuario);
@@ -71,7 +81,31 @@ public class Pedidos extends ActionBarActivity {
 
         refresh.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                orderquant = datos.size();
                 refresh();
+                if (datos.size() == 0) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(Pedidos.this).create();
+                    alertDialog.setTitle("No tiene ordenes pendientes");
+                    alertDialog.setMessage("No se le han asignado mas ordenes");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+                } else if (datos.size() == orderquant) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(Pedidos.this).create();
+                    alertDialog.setTitle("No se le han asignado mas ordenes");
+                    alertDialog.setMessage("");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+                }
             }
         });
 
@@ -82,8 +116,8 @@ public class Pedidos extends ActionBarActivity {
             Bundle extras = new Bundle();
             if(selectedItems.size() == 0){
                 AlertDialog alertDialog = new AlertDialog.Builder(Pedidos.this).create();
-                alertDialog.setTitle("Ningun pedido seleccionado");
-                alertDialog.setMessage("Por favor seleccione por lo menos un pedido.");
+                alertDialog.setTitle("Ningún pedido seleccionado");
+                alertDialog.setMessage("Por favor seleccione por lo menos un pedido");
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -108,8 +142,32 @@ public class Pedidos extends ActionBarActivity {
             }
         }
     });
+        updateCantidad();
     }
 
+    private void updateCantidad()
+    {
+        textViewCantidad.setText("Pedidos:" +datos.size());
+    }
+
+    private String getCurrentDate()
+    {
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => " + c.getTime());
+
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        String formattedDate = df.format(c.getTime());
+
+        return formattedDate;
+    }
+    public void setActionBar()
+    {
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Ordenes");
+        getSupportActionBar().setIcon(R.mipmap.moto_ab);
+
+    }
     @Override
     protected void onResume(){
         super.onResume();
@@ -138,7 +196,8 @@ public class Pedidos extends ActionBarActivity {
         }
     }
 
-    private void refresh(){
+    private void refresh()
+    {
         deliveries.clear();
         deliveries = ServerSignal.listDeliveries(usuario);
         datos.clear();
@@ -154,5 +213,6 @@ public class Pedidos extends ActionBarActivity {
 
             }
         });
+        updateCantidad();
     }
 }

@@ -1,11 +1,20 @@
 package com.example.guelmis.deliveryffap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.location.Location;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.guelmis.deliveryffap.models.Customer;
 import com.example.guelmis.deliveryffap.models.MultipleDelivery;
@@ -21,19 +30,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.location.Location;
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Rutas extends FragmentActivity implements LocationProvider.LocationCallback {
+public class Rutas extends ActionBarActivity implements LocationProvider.LocationCallback{
     public static final String TAG = Rutas.class.getSimpleName();
     private LocationProvider mLocationProvider;
+    private Toolbar toolbar;
     private GoogleMap map;
     private ArrayList<LatLng> ubicacionesTiendas;
     private ArrayList<LatLng> ubicacionesClientes;
@@ -51,15 +55,18 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
     private boolean lastRoute;
     Button paquete;
     View view;
+    private RecyclerView recyclerview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ruta);
+        setActionBar();
         paquete = (Button) findViewById(R.id.btnpackage);
         final Bundle points = getIntent().getExtras();
         usuario = points.getString("usuario");
         fulldeliveryinfo = ServerSignal.getSeveralDeliveries(getDeliveryIDsfromBundle(points));
+        reciclerViewStuff();
 
         if(fulldeliveryinfo == null){
             AlertDialog alertDialog = new AlertDialog.Builder(Rutas.this).create();
@@ -153,6 +160,24 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         }
     }
 
+    private void reciclerViewStuff()
+    {
+        //Te deje este parte de aqui tirado, esto es necesario para que el reciclerview trabje
+        recyclerview = (RecyclerView) findViewById(R.id.recycler_lista_delivery);
+
+        recyclerview.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerview.setLayoutManager(llm);
+
+        //Aqui es parecido a como trabaja el listview, un viewholder es lo equivalente a un adaptador pero cuando utilizamos recilcer view
+        //Te lo dejo con recicler view pq cuando vino android 5.0 los listview se dejaron de utilizar y fueron reemplazos por los reciclerview
+        //Debes crear tu viewholder y pasarle por parametro tu lista de elementos y luego ese viewholder pasarselo como parametro a tu reciclerview
+//
+//        chofer_informacion_viewHolder civh = new chofer_informacion_viewHolder(dishome.establecimientosArray);
+//        recyclerview.setAdapter(civh);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -174,7 +199,7 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
             rectLine = new PolylineOptions().width(4).color(Color.BLUE);
         }
         else{
-            rectLine = new PolylineOptions().width(8).color(Color.RED);
+            rectLine = new PolylineOptions().width(10).color(Color.RED);
         }
         for (int i = 0; i < directionPoints.size(); i++) {
             rectLine.add((LatLng) directionPoints.get(i));
@@ -271,11 +296,12 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
         //Toast.makeText(Rutas.this, "Moviendo " + currentLatitude + " " + currentLongitude, Toast.LENGTH_LONG).show();
         ubicacion = new LatLng(location.getLatitude(), location.getLongitude());
 
-        map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual"));
+        map.addMarker(new MarkerOptions().position(ubicacion).title("Ubicacion Actual")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
         BasicResponse confirm = updateLocation();
         //Toast.makeText(Rutas.this, distTotal.toString() + " km " + tTotal.toString() + " min", Toast.LENGTH_LONG).show();
-        Toast.makeText(Rutas.this, offset + " " +  offsetSellers() + " " + offsetCustomers() + " " +
-                ubicacionesTiendas.size(), Toast.LENGTH_LONG).show();
+        /*Toast.makeText(Rutas.this, offset + " " +  offsetSellers() + " " + offsetCustomers() + " " +
+               ubicacionesTiendas.size(), Toast.LENGTH_LONG).show(); */
 
         if(!areaApplied){
             CrearRuta(ubicacion, ubicacionesTiendas);
@@ -447,4 +473,15 @@ public class Rutas extends FragmentActivity implements LocationProvider.Location
 
 
     */
+    public void setActionBar()
+    {
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Rutas");
+        getSupportActionBar().setIcon(R.mipmap.moto_ab);
+
+    }
+
 }
+
+

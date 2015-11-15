@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,7 @@ public class MainActivity extends ActionBarActivity {
     ActionBar actionbar;
     private static String KEY_SUCCESS = "success";
     private static String KEY_MESSAGE = "message";
+    private Toolbar toolbar;
 
     /*Manejar esta excepcion desde el JSON Parser para indicar que no se pudo conectar a la pagina.
     * HttpHostConnectException */
@@ -39,10 +41,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        actionbar = getSupportActionBar();
-        actionbar.setDisplayShowHomeEnabled(true);
-        actionbar.setTitle("  DeliveryFFAP LogIn");
-        actionbar.setIcon(R.mipmap.moto_ab);
+//        actionbar = getSupportActionBar();
+//        actionbar.setDisplayShowHomeEnabled(true);
+//        actionbar.setTitle("  DeliveryFFAP LogIn");
+//        actionbar.setIcon(R.mipmap.moto_ab);
+        setActionBar();
         email = (EditText) findViewById(R.id.editTextEmail);
         password = (EditText) findViewById(R.id.editTextEmail);
         login = (Button) findViewById(R.id.botonlogin);
@@ -88,6 +91,14 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    public void setActionBar()
+    {
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Delivery FFAP");
+        getSupportActionBar().setIcon(R.mipmap.moto_ab);
+
+    }
     private class NetCheck extends AsyncTask<String, String, Boolean> {
         private ProgressDialog nDialog;
 
