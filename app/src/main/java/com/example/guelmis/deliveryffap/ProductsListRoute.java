@@ -10,6 +10,7 @@ package com.example.guelmis.deliveryffap;
         import android.widget.TextView;
 
         import com.example.guelmis.deliveryffap.models.DeliveryInfo;
+        import com.example.guelmis.deliveryffap.models.Seller;
 
         import java.util.ArrayList;
         import java.util.HashMap;
@@ -18,11 +19,12 @@ public class ProductsListRoute extends
         RecyclerView.Adapter<ProductsListRoute.ContactViewHolder>
 
 {
-    ArrayList<DeliveryInfo> deliveryData = new
-            ArrayList<DeliveryInfo>();
+    ArrayList<Seller> deliveryData = new
+            ArrayList<Seller>();
 
-    public ProductsListRoute(ArrayList<DeliveryInfo> datosSeller) {
+    public ProductsListRoute(ArrayList<Seller> datosSeller) {
         this.deliveryData = datosSeller;
+       // int i =0;
     }
 
     @Override
@@ -33,10 +35,11 @@ public class ProductsListRoute extends
     @Override
     public void onBindViewHolder(ContactViewHolder contactViewHolder, int i) {
         //  ContactInfo ci = contactList.get(i);
-        contactViewHolder.vName.setText(deliveryData.get(i).get("SellerName"));
-        contactViewHolder.vPhone.setText(deliveryData.get(i).get("SellerPhone"));
-        contactViewHolder.vDireccion.setText(deliveryData.get(i).get("SellerAddress"));
-        contactViewHolder.vItem.setText(deliveryData.get(i).get("Productos"));
+        contactViewHolder.vName.setText(deliveryData.get(i).getName());
+        contactViewHolder.vPhone.setText(deliveryData.get(i).getPhone());
+        contactViewHolder.vDireccion.setText(deliveryData.get(i).getAddress());
+        contactViewHolder.vItem.setText(deliveryData.get(i).getProducts().toString());
+        int j=0;
     }
 
     @Override

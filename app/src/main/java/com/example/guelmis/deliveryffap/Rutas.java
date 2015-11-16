@@ -66,7 +66,6 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
         final Bundle points = getIntent().getExtras();
         usuario = points.getString("usuario");
         fulldeliveryinfo = ServerSignal.getSeveralDeliveries(getDeliveryIDsfromBundle(points));
-        reciclerViewStuff();
 
         if(fulldeliveryinfo == null){
             AlertDialog alertDialog = new AlertDialog.Builder(Rutas.this).create();
@@ -107,6 +106,8 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                     .title("Cliente "+ fulldeliveryinfo.getCustomers().get(i).getName()));
         }
+
+        reciclerViewStuff();
 
         distTotal=0.0;
         tTotal=0.0;
@@ -174,8 +175,8 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
         //Te lo dejo con recicler view pq cuando vino android 5.0 los listview se dejaron de utilizar y fueron reemplazos por los reciclerview
         //Debes crear tu viewholder y pasarle por parametro tu lista de elementos y luego ese viewholder pasarselo como parametro a tu reciclerview
 //
-//        chofer_informacion_viewHolder civh = new chofer_informacion_viewHolder(dishome.establecimientosArray);
-//        recyclerview.setAdapter(civh);
+        ProductsListRoute civh = new ProductsListRoute(fulldeliveryinfo.getSellers());
+        recyclerview.setAdapter(civh);
     }
 
     @Override
