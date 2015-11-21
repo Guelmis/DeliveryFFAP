@@ -3,6 +3,7 @@ package com.example.guelmis.deliveryffap;
 /**
  * Created by Guelmis on 11/15/2015.
  */
+        import android.content.Context;
         import android.support.v7.widget.RecyclerView;
         import android.view.LayoutInflater;
         import android.view.View;
@@ -16,30 +17,28 @@ package com.example.guelmis.deliveryffap;
         import java.util.HashMap;
 
 public class ProductsListRoute extends
-        RecyclerView.Adapter<ProductsListRoute.ContactViewHolder>
-
-{
+        RecyclerView.Adapter<ProductsListRoute.ContactViewHolder> {
     ArrayList<Seller> deliveryData = new
             ArrayList<Seller>();
 
     public ProductsListRoute(ArrayList<Seller> datosSeller) {
         this.deliveryData = datosSeller;
-       // int i =0;
-    }
-
-    @Override
-    public int getItemCount() {
-        return deliveryData.size();
+       //stastatus int i =0;
     }
 
     @Override
     public void onBindViewHolder(ContactViewHolder contactViewHolder, int i) {
-        //  ContactInfo ci = contactList.get(i);
+        //ContactInfo ci = contactList.get(i);
         contactViewHolder.vName.setText(deliveryData.get(i).getName());
         contactViewHolder.vPhone.setText(deliveryData.get(i).getPhone());
         contactViewHolder.vDireccion.setText(deliveryData.get(i).getAddress());
         contactViewHolder.vItem.setText(deliveryData.get(i).getProducts().toString());
-        int j=0;
+      //  int j=0;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
     }
 
     @Override
@@ -47,7 +46,8 @@ public class ProductsListRoute extends
         View itemView = LayoutInflater.
                 from(viewGroup.getContext()).
                 inflate(R.layout.list_mapa_detail, viewGroup, false);
-
+       // ContactViewHolder pvh = new ContactViewHolder (itemView);
+        int o=1;
         return new ContactViewHolder(itemView);
     }
 
@@ -67,6 +67,11 @@ public class ProductsListRoute extends
             vDireccion = (TextView)v.findViewById(R.id.textViewAddress);
             vItem = (TextView)  v.findViewById(R.id.textViewProductos);
             ItemName = (TextView) v.findViewById(R.id.txtItems);
+            //int j = 0;
         }
+    }
+    @Override
+    public int getItemCount() {
+        return deliveryData.size();
     }
 }

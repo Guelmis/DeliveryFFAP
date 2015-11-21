@@ -165,11 +165,11 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
     {
         //Te deje este parte de aqui tirado, esto es necesario para que el reciclerview trabje
         recyclerview = (RecyclerView) findViewById(R.id.recycler_lista_delivery);
-
         recyclerview.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+        LinearLayoutManager llm = new LinearLayoutManager(Rutas.this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerview.setLayoutManager(llm);
+
 
         //Aqui es parecido a como trabaja el listview, un viewholder es lo equivalente a un adaptador pero cuando utilizamos recilcer view
         //Te lo dejo con recicler view pq cuando vino android 5.0 los listview se dejaron de utilizar y fueron reemplazos por los reciclerview
@@ -177,6 +177,7 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
 //
         ProductsListRoute civh = new ProductsListRoute(fulldeliveryinfo.getSellers());
         recyclerview.setAdapter(civh);
+        //recyclerview.draw(Rutas.this);
     }
 
     @Override
