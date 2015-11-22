@@ -48,10 +48,6 @@ public class Pedidos extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pedidos);
         setActionBar();
-        //        actionbar = getSupportActionBar();
-//        actionbar.setDisplayShowHomeEnabled(true);
-//        actionbar.setTitle("  DeliveryFFAP Ordenes");
-//        actionbar.setIcon(R.mipmap.moto_ab);
         ruta = (Button) findViewById(R.id.btnruta);
         refresh = (Button) findViewById (R.id.btnrefresh);
         user = (TextView) findViewById(R.id.textViewUser);
@@ -147,7 +143,7 @@ public class Pedidos extends ActionBarActivity {
 
     private void updateCantidad()
     {
-        textViewCantidad.setText("Pedidos:" +datos.size());
+        textViewCantidad.setText("Pedidos: " +datos.size());
     }
 
     private String getCurrentDate()

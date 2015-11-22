@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="android.permission.SET_DEBUG_APP"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/moto_icon"
@@ -27,8 +28,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="Delivery FFAP"
-            android:exported="true">
+            android:label="Delivery FFAP">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

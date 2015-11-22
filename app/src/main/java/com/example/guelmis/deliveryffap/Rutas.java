@@ -114,11 +114,10 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
         paquete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(offsetSellers() != -1){
+                if (offsetSellers() != -1) {
                     restartWithOffset();
-                }
-                else {
-                  //  final Customer cliente = fulldeliveryinfo.getCustomers().get(offsetCustomers());
+                } else {
+                    //  final Customer cliente = fulldeliveryinfo.getCustomers().get(offsetCustomers());
                     AlertDialog alertDialog = new AlertDialog.Builder(Rutas.this).create();
                     alertDialog.setTitle("Confirmar la entrega de la orden");
                     alertDialog.setMessage("Confirmar que la orden se entrego satisfactoriamente?");
@@ -126,22 +125,20 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    if(offset == ubicacionesTiendas.size() + ubicacionesClientes.size() -1){
+                                    if (offset == ubicacionesTiendas.size() + ubicacionesClientes.size() - 1) {
                                         BasicResponse answer = finishDeliveries(fulldeliveryinfo.getCustomers().get(0).getDeliveryIDs());
-                                        for(int i=1; i< fulldeliveryinfo.getCustomers().size(); i++){
+                                        for (int i = 1; i < fulldeliveryinfo.getCustomers().size(); i++) {
                                             BasicResponse current = finishDeliveries(fulldeliveryinfo.getCustomers().get(i).getDeliveryIDs());
-                                            if(!current.success()){
+                                            if (!current.success()) {
                                                 answer = current;
                                             }
                                         }
-                                        if(answer.success()){
+                                        if (answer.success()) {
                                             finish();
-                                        }
-                                        else {
+                                        } else {
                                             Toast.makeText(Rutas.this, answer.getMessage(), Toast.LENGTH_LONG).show();
                                         }
-                                    }
-                                    else {
+                                    } else {
                                         restartWithOffset();
                                     }
                                 }
@@ -390,6 +387,9 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
 
         ArrayList<Double> timesPerUser = new ArrayList<>();
         Double psum = 0.0;
+        for(int i= 0; i<ubicacionesTiendas.size() + ubicacionesClientes.size(); i++){
+            timesPerUser.add(psum);
+        }
 
         for(int i=0; i<partialTime.size(); i++){
             psum += partialTime.get(i);

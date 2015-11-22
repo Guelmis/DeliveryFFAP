@@ -3,16 +3,13 @@ package com.example.guelmis.deliveryffap;
 /**
  * Created by Guelmis on 11/15/2015.
  */
-        import android.content.Context;
         import android.support.v7.widget.RecyclerView;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
         import android.widget.TextView;
-
         import com.example.guelmis.deliveryffap.models.DeliveryInfo;
         import com.example.guelmis.deliveryffap.models.Seller;
-
         import java.util.ArrayList;
         import java.util.HashMap;
 
@@ -34,11 +31,6 @@ public class ProductsListRoute extends
         contactViewHolder.vDireccion.setText(deliveryData.get(i).getAddress());
         contactViewHolder.vItem.setText(deliveryData.get(i).getProducts().toString());
       //  int j=0;
-    }
-
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
     }
 
     @Override
@@ -72,6 +64,7 @@ public class ProductsListRoute extends
     }
     @Override
     public int getItemCount() {
+
         return deliveryData.size();
     }
 }
