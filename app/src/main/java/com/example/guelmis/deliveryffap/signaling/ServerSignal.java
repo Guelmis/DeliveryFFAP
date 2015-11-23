@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ServerSignal {
     public static final String domain = "http://10.0.0.23:5000/"; //local
-    //public static final String domain = "http://ffap-itt-2015.herokuapp.com/"; //web
+    // public static final String domain = "http://ffap-itt-2015.herokuapp.com/"; //web
 
     public static final String loginURL = domain + "mobile_login/";
     public static final String sellersURL = domain + "seller_query/";
@@ -143,7 +143,6 @@ public class ServerSignal {
             for(int i=0; i<answer.length(); i++){
                 ret.add(new DeliveryInfo(Integer.parseInt(answer.getJSONObject(i).getString("id")),
                         Integer.parseInt(answer.getJSONObject(i).getJSONObject("order").getString("id")),
-                        answer.getJSONObject(i).getJSONObject("order").getString("invoice"),
                         answer.getJSONObject(i).getJSONObject("client").getString(username_tag)));
             }
         } catch (ExecutionException e) {
@@ -251,8 +250,6 @@ public class ServerSignal {
                 }
                 Customer thisCustomer = new Customer(
                         deliveryJSON.getJSONObject("client").getString("username"),
-                        deliveryJSON.getJSONObject("client").getString("phone"),
-                        deliveryJSON.getJSONObject("client").getString("address"),
                         deliveryJSON.getInt("id"),
                         deliveryJSON.getJSONObject("order").getInt("id"),
                         extractLocation(deliveryJSON),
