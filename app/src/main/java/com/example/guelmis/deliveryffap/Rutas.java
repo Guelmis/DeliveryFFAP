@@ -160,21 +160,19 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
 
     private void reciclerViewStuff()
     {
-        //Te deje este parte de aqui tirado, esto es necesario para que el reciclerview trabje
-        recyclerview = (RecyclerView) findViewById(R.id.recycler_lista_delivery);
-        recyclerview.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(Rutas.this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerview = (RecyclerView) findViewById(R.id.recycler_lista_delivery);
+        recyclerview.setHasFixedSize(true);
         recyclerview.setLayoutManager(llm);
-
-
-        //Aqui es parecido a como trabaja el listview, un viewholder es lo equivalente a un adaptador pero cuando utilizamos recilcer view
-        //Te lo dejo con recicler view pq cuando vino android 5.0 los listview se dejaron de utilizar y fueron reemplazos por los reciclerview
-        //Debes crear tu viewholder y pasarle por parametro tu lista de elementos y luego ese viewholder pasarselo como parametro a tu reciclerview
-//
-        ProductsListRoute civh = new ProductsListRoute(fulldeliveryinfo.getSellers());
-        recyclerview.setAdapter(civh);
-        //recyclerview.draw(Rutas.this);
+        if(offsetSellers()==-1){
+            CustomerViewHolder civh2 = new CustomerViewHolder(fulldeliveryinfo.getCustomers());
+            recyclerview.setAdapter(civh2);
+        }
+        else{
+            ProductsListRoute civh = new ProductsListRoute(fulldeliveryinfo.getSellers());
+            recyclerview.setAdapter(civh);
+        }
     }
 
     @Override
@@ -350,9 +348,7 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
     private String markerTitle(int index){
         String ret = "";
         ret += fulldeliveryinfo.getSellers().get(index).getName() + "\n";
-        /*for (int i=0; i<fulldeliveryinfo.getSellers().get(index).getProducts().size(); i++){
-            ret += fulldeliveryinfo.getSellers().get(index).getProducts().get(i).getTitle();
-        }*/
+
         return ret;
     }
 
@@ -387,9 +383,6 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
 
         ArrayList<Double> timesPerUser = new ArrayList<>();
         Double psum = 0.0;
-        for(int i= 0; i<ubicacionesTiendas.size() + ubicacionesClientes.size(); i++){
-            timesPerUser.add(psum);
-        }
 
         for(int i=0; i<partialTime.size(); i++){
             psum += partialTime.get(i);
@@ -399,12 +392,14 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
         }
 
         int i=0;
-       // int initialid = fulldeliveryinfo.getCustomers().get(i).getDeliveryIDs().get(i);
         ret = ServerSignal.sendLocation(i, ubicacion, "0.0");
         if(partialTime.size() > 0){
             boolean success = false;
             for(Customer client : fulldeliveryinfo.getCustomers()){
                 for (int id : client.getDeliveryIDs()){
+                    if(i==timesPerUser.size()){
+                        break;
+                    }
                     if(success){
                         BasicResponse temp = ServerSignal.sendLocation(id, ubicacion, Double.toString(timesPerUser.get(i) * 1.25).split("\\.")[0]);
                         if(!temp.success()){
@@ -444,14 +439,6 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
 
         ArrayList<Customer> custs = fulldeliveryinfo.getCustomers();
         int idcount = 0;
-        int init;
-       /* if (offsetSellers() == -1){
-            init = offsetCustomers()+1;
-            extras.putInt("offset", offset);
-        }
-        else{
-        }*/
-        //init =offsetCustomers();
         extras.putInt("offset", offset + 1);
         for(int i = 0; i<custs.size(); i++){
             for(Integer delid :custs.get(i).getDeliveryIDs()){
@@ -466,15 +453,6 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
         startActivity(myIntent);
     }
 
-    /*
-    ArrayList<Integer> ids = fulldeliveryinfo.getAllDeliveryIDs();
-        extras.putInt("cantidad", ids.size());
-        for(int i=0; i<ids.size(); i++){
-            extras.putInt("delivery_id" + i, ids.get(i));
-        }
-
-
-    */
     public void setActionBar()
     {
         toolbar = (Toolbar) findViewById(R.id.app_bar);

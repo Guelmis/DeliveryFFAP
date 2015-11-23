@@ -211,7 +211,7 @@ public class MainActivity extends ActionBarActivity {
                         pDialog.dismiss();
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                         alertDialog.setTitle("No se pudo iniciar sesión");
-                        alertDialog.setMessage("Nombre de usuario y/o contraseña incorrectos, Por favor intentelo de nuevo");
+                        alertDialog.setMessage(json.getString(KEY_MESSAGE));
                         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "OK",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {

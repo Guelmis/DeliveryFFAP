@@ -8,6 +8,8 @@ package com.example.guelmis.deliveryffap;
         import android.view.View;
         import android.view.ViewGroup;
         import android.widget.TextView;
+
+        import com.example.guelmis.deliveryffap.models.Customer;
         import com.example.guelmis.deliveryffap.models.DeliveryInfo;
         import com.example.guelmis.deliveryffap.models.Seller;
         import java.util.ArrayList;
@@ -15,8 +17,7 @@ package com.example.guelmis.deliveryffap;
 
 public class ProductsListRoute extends
         RecyclerView.Adapter<ProductsListRoute.ContactViewHolder> {
-    ArrayList<Seller> deliveryData = new
-            ArrayList<Seller>();
+    ArrayList<Seller> deliveryData;
 
     public ProductsListRoute(ArrayList<Seller> datosSeller) {
         this.deliveryData = datosSeller;
@@ -39,7 +40,6 @@ public class ProductsListRoute extends
                 from(viewGroup.getContext()).
                 inflate(R.layout.list_mapa_detail, viewGroup, false);
        // ContactViewHolder pvh = new ContactViewHolder (itemView);
-        int o=1;
         return new ContactViewHolder(itemView);
     }
 
@@ -56,7 +56,7 @@ public class ProductsListRoute extends
             super(v);
             vName =  (TextView) v.findViewById(R.id.textViewName);
             vPhone = (TextView)  v.findViewById(R.id.textViewPhone);
-            vDireccion = (TextView)v.findViewById(R.id.textViewAddress);
+            vDireccion = (TextView)v.findViewById(R.id.textViewDireccion);
             vItem = (TextView)  v.findViewById(R.id.textViewProductos);
             ItemName = (TextView) v.findViewById(R.id.txtItems);
             //int j = 0;

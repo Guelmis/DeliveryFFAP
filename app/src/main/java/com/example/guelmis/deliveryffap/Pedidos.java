@@ -61,7 +61,7 @@ public class Pedidos extends ActionBarActivity {
         usuario = getIntent().getStringExtra("usuario");
         deliveries = ServerSignal.listDeliveries(usuario);
         for(int i=0; i<deliveries.size(); i++){
-            datos.add("Orden "+ deliveries.get(i).getOrder_id() + ", Cliente " + deliveries.get(i).getUsername());
+            datos.add("Orden "+ deliveries.get(i).getInvoice() + ", Cliente " + deliveries.get(i).getUsername());
         }
         adaptador = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, datos);
 
@@ -198,7 +198,7 @@ public class Pedidos extends ActionBarActivity {
         deliveries = ServerSignal.listDeliveries(usuario);
         datos.clear();
         for (int i = 0; i < deliveries.size(); i++) {
-            datos.add("Orden " + deliveries.get(i).getOrder_id() + "\n" + "Cliente: " + deliveries.get(i).getUsername());
+            datos.add("Orden " + deliveries.get(i).getInvoice() + "\n" + "Cliente: " + deliveries.get(i).getUsername());
         }
         List = (ListView) findViewById(R.id.ListaPedidos);
         List.setAdapter(adaptador);

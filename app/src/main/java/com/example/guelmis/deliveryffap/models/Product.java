@@ -83,6 +83,11 @@ public class Product {
     public void setId(String id) { this.id = id; }
 
     @Override
+    public String toString(){
+        return title + ", ";
+    }
+
+    @Override
     public int hashCode(){
 
         return new HashCodeBuilder(13, 29).append(title).

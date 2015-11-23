@@ -12,13 +12,17 @@ import java.util.ArrayList;
  */
 public class Customer {
     private String name;
+    private String phone;
+    private String address;
     private ArrayList<Integer> delivery_ids;
     private ArrayList<Integer> order_ids;
     private LatLng location;
     private ArrayList<LineItem> orderedItems;
 
-    public Customer(String _name, int _delid, int _oid, LatLng _loca, ArrayList<LineItem> _itemsOrdered){
+    public Customer(String _name, String _phone, String _address, int _delid, int _oid, LatLng _loca, ArrayList<LineItem> _itemsOrdered){
         name = _name;
+        phone = _phone;
+        address = _address;
         delivery_ids = new ArrayList<>();
         delivery_ids.add(_delid);
         order_ids = new ArrayList<>();
@@ -27,12 +31,22 @@ public class Customer {
         orderedItems = _itemsOrdered;
     }
 
-    public Customer(String _name, ArrayList<Integer> _delids, ArrayList<Integer> _oids, LatLng _loca, ArrayList<LineItem> _itemsOrdered){
+    public Customer(String _name, String _phone, String _address, ArrayList<Integer> _delids, ArrayList<Integer> _oids, LatLng _loca, ArrayList<LineItem> _itemsOrdered){
         name = _name;
+        phone = _phone;
+        address = _address;
         delivery_ids = _delids;
         order_ids = _oids;
         location = _loca;
         orderedItems = _itemsOrdered;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public String getName() {

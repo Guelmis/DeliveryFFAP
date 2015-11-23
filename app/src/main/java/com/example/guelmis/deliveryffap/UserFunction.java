@@ -68,6 +68,7 @@ public class UserFunction {
         //params.add(new BasicNameValuePair("tag", login_tag));
         params.add(new BasicNameValuePair("username", email));
         params.add(new BasicNameValuePair("password", password));
+        params.add(new BasicNameValuePair("role", "delivery"));
         JSONObject json = jsonParser.postJSONFromUrl(loginURL, params);
         return json;
     }

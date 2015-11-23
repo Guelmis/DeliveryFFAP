@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp"
     android:layout_margin="5dp">
 
@@ -13,7 +13,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/textViewName"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:background="@color/primaryColor"
@@ -22,37 +22,13 @@
             android:textColor="@android:color/white"
             android:textSize="14dp"/>
 
-
-
-        <LinearLayout
-            android:id="@+id/linearName"
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/title">
-
-
-            <TextView
-                android:layout_width="90dp"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Nombre"
-                android:id="@+id/textView" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/textViewName" />
-        </LinearLayout>
-
         <LinearLayout
             android:id="@+id/linearPhone"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/linearName"
-            android:layout_alignStart="@+id/linearName">
+            android:layout_below="@+id/textViewName"
+            android:layout_alignStart="@+id/textViewName">
 
 
             <TextView

@@ -4,11 +4,13 @@ public class DeliveryInfo {
     private int id;
     private int order_id;
     private String username;
+    private String invoice;
 
-    public DeliveryInfo(int _id, int _order_id, String _uname){
+    public DeliveryInfo(int _id, int _order_id, String _invoice, String _uname){
         id = _id;
         order_id = _order_id;
         username = _uname;
+        invoice = _invoice;
     }
 
     public int getId() {
@@ -22,4 +24,9 @@ public class DeliveryInfo {
     public String getUsername() {
         return username;
     }
+
+    public String getInvoice() {
+        return invoice;
+    }
+
 }
