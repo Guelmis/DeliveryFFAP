@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.guelmis.deliveryffap.models.Customer;
 import com.example.guelmis.deliveryffap.models.MultipleDelivery;
+import com.example.guelmis.deliveryffap.models.Seller;
 import com.example.guelmis.deliveryffap.signaling.BasicResponse;
 import com.example.guelmis.deliveryffap.signaling.ServerSignal;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -166,11 +167,19 @@ public class Rutas extends ActionBarActivity implements LocationProvider.Locatio
         recyclerview.setHasFixedSize(true);
         recyclerview.setLayoutManager(llm);
         if(offsetSellers()==-1){
-            CustomerViewHolder civh2 = new CustomerViewHolder(fulldeliveryinfo.getCustomers());
+            ArrayList<Customer> custs = new ArrayList<>();
+            for(int i = offsetCustomers(); i<fulldeliveryinfo.getCustomers().size(); i++){
+                custs.add(fulldeliveryinfo.getCustomers().get(i));
+            }
+            CustomerViewHolder civh2 = new CustomerViewHolder(custs);
             recyclerview.setAdapter(civh2);
         }
         else{
-            ProductsListRoute civh = new ProductsListRoute(fulldeliveryinfo.getSellers());
+            ArrayList<Seller> sells = new ArrayList<>();
+            for(int i = offsetSellers(); i<fulldeliveryinfo.getSellers().size(); i++){
+                sells.add(fulldeliveryinfo.getSellers().get(i));
+            }
+            ProductsListRoute civh = new ProductsListRoute(sells);
             recyclerview.setAdapter(civh);
         }
     }
