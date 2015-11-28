@@ -11,6 +11,7 @@ package com.example.guelmis.deliveryffap;
 
         import com.example.guelmis.deliveryffap.models.Customer;
         import com.example.guelmis.deliveryffap.models.DeliveryInfo;
+        import com.example.guelmis.deliveryffap.models.LineItem;
         import com.example.guelmis.deliveryffap.models.Seller;
         import java.util.ArrayList;
         import java.util.HashMap;
@@ -24,13 +25,24 @@ public class ProductsListRoute extends
        //stastatus int i =0;
     }
 
+    protected String itemsString(ArrayList<LineItem> input){
+        String ret = "";
+        for (int i= 0; i<input.size(); i++){
+            ret += input.get(i).toString();
+            if(i<(input.size()-1)){
+                ret += ", ";
+            }
+        }
+        return ret;
+    }
+
     @Override
     public void onBindViewHolder(ContactViewHolder contactViewHolder, int i) {
         //ContactInfo ci = contactList.get(i);
         contactViewHolder.vName.setText(deliveryData.get(i).getName());
         contactViewHolder.vPhone.setText(deliveryData.get(i).getPhone());
         contactViewHolder.vDireccion.setText(deliveryData.get(i).getAddress());
-        contactViewHolder.vItem.setText(deliveryData.get(i).getProducts().toString());
+        contactViewHolder.vItem.setText(itemsString(deliveryData.get(i).getProducts()));
       //  int j=0;
     }
 

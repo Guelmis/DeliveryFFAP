@@ -34,6 +34,11 @@ public class LineItem extends Product {
     }
 
     @Override
+    public String toString(){
+        return quantity + "x " +title;
+    }
+
+    @Override
     public int hashCode(){
 
         return new HashCodeBuilder(13, 29).append(title).

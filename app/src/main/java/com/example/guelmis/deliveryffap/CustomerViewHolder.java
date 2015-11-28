@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.guelmis.deliveryffap.models.Customer;
+import com.example.guelmis.deliveryffap.models.LineItem;
 
 import java.util.ArrayList;
 
@@ -21,13 +22,24 @@ public class CustomerViewHolder extends
         //stastatus int i =0;
     }
 
+    protected String itemsString(ArrayList<LineItem> input){
+        String ret = "";
+        for (int i= 0; i<input.size(); i++){
+            ret += input.get(i).toString();
+            if(i<(input.size()-1)){
+                ret += ", ";
+            }
+        }
+        return ret;
+    }
+
     @Override
     public void onBindViewHolder(ProductsListRoute.ContactViewHolder contactViewHolder, int i) {
         //ContactInfo ci = contactList.get(i);
         contactViewHolder.vName.setText(customerData.get(i).getName());
         contactViewHolder.vPhone.setText(customerData.get(i).getPhone());
         contactViewHolder.vDireccion.setText(customerData.get(i).getAddress());
-        contactViewHolder.vItem.setText(customerData.get(i).getOrderedItems().toString());
+        contactViewHolder.vItem.setText(itemsString(customerData.get(i).getOrderedItems()));
         //  int j=0;
     }
 
